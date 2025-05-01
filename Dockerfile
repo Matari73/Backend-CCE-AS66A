@@ -1,5 +1,5 @@
 # 1. Imagem base com Node.js
-FROM node:18
+FROM node:23-slim
 
 # 2. Diretório de trabalho dentro do container
 WORKDIR /app
