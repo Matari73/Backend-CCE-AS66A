@@ -1,12 +1,14 @@
-const http = require('http');
-const PORT = 3000;
-const rotas = {
-    "/": "Certificadora Específica - Back-end",
-};
-const server = http.createServer((req, res) => {
-    res.writeHead(200, { "Content-Type": "text/plain" });
-    res.end(rotas[req.url]);
-})
-server.listen(PORT, () => {
-    console.log("Servidor escutando...")
-})
+import express from 'express';
+import dotenv from 'dotenv';
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 3001;
+
+app.get('/', (req, res) => {
+    res.send('Certificadora Específica - Back-end');
+});
+
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Servidor Express rodando na porta ${PORT}`);
+});
