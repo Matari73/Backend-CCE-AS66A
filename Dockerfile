@@ -13,10 +13,9 @@ RUN npm install
 # 5. Copia o restante dos arquivos da aplicação
 COPY . .
 
-# 6. Expõe a porta (deve bater com o que está no docker-compose)
+# 6. Expõe a porta
 EXPOSE 3001
 
-# 7. Comando padrão para rodar o app (redefinido pelo docker-compose com npm run dev)
-# No lugar de npm start
+# 7. Comando padrão para rodar o app
 CMD ["npm", "run", "dev"]
 

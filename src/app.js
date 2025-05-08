@@ -1,5 +1,5 @@
 import express from 'express';
-import { conectaNaDatabase } from './db/db.js';
+import { connectInDatabase } from './db/db.js';
 
 const app = express();
 app.use(express.json());
@@ -9,7 +9,7 @@ app.get('/', (req, res) => {
 });
 
 const startApp = async () => {
-    await conectaNaDatabase();
+    await connectInDatabase();
 };
 
 startApp();

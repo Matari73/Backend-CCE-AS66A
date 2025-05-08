@@ -10,7 +10,7 @@ const sequelize = new Sequelize(process.env.POSTGRES_DB,
         dialect: 'postgres',
     });
 
-const conectaNaDatabase = async () => {
+const connectInDatabase = async () => {
     let attempts = 5;
     while (attempts) {
         try {
@@ -28,4 +28,4 @@ const conectaNaDatabase = async () => {
     process.exit(1);
 };
 
-export { sequelize, conectaNaDatabase };
+export { sequelize, connectInDatabase };
