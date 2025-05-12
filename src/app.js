@@ -1,15 +1,14 @@
 import express from 'express';
-import { connectInDatabase } from './db/db.js';
+import { sequelize, connectInDatabase } from './db/db.js';
+import routes from './routes/index.js';
 
 const app = express();
-app.use(express.json());
-
-app.get('/', (req, res) => {
-    res.status(200).send('Certificadora de Competência Específica');
-});
+routes(app);
 
 const startApp = async () => {
     await connectInDatabase();
+    await sequelize.sync({ force: true }); // recria todas as tabelas
+  console.log('Banco de dados sincronizado');
 };
 
 startApp();
