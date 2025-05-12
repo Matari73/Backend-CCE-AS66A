@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../db/db');
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../db/db.js';
 
 const Agent = sequelize.define('Agent', {
   agent_id: {
@@ -16,4 +16,4 @@ const Agent = sequelize.define('Agent', {
   timestamps: false,
 });
 
-module.exports = Agent;
+export default Agent;

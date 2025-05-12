@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../db/db');
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../db/db.js';
 
 const Championship = sequelize.define('Championship', {
   championship_id: {
@@ -38,14 +38,10 @@ const Championship = sequelize.define('Championship', {
   user_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'users',
-      key: 'user_id',
-    },
   },
 }, {
   tableName: 'championships',
   timestamps: false,
 });
 
-module.exports = Championship;
+export default Championship;

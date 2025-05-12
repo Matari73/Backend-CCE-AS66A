@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../db/db');
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../db/db.js';
 
 const Match = sequelize.define('Match', {
   match_id: {
@@ -10,26 +10,14 @@ const Match = sequelize.define('Match', {
   championship_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'championships',
-      key: 'championship_id',
-    },
   },
   teamA_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'teams',
-      key: 'team_id',
-    },
   },
   teamB_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'teams',
-      key: 'team_id',
-    },
   },
   date: {
     type: DataTypes.DATE,
@@ -39,17 +27,13 @@ const Match = sequelize.define('Match', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  winning_team_id: {
+  winner_team_id: {
     type: DataTypes.INTEGER,
     allowNull: true,
-    references: {
-      model: 'teams',
-      key: 'team_id',
-    },
   },
   score: {
-    type: DataTypes.JSON,
-    allowNull: false,
+    type: DataTypes.JSONB,
+    allowNull: true,
   },
   map: {
     type: DataTypes.STRING,
@@ -60,4 +44,4 @@ const Match = sequelize.define('Match', {
   timestamps: false,
 });
 
-module.exports = Match;
+export default Match;

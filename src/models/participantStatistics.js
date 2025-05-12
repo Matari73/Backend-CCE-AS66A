@@ -1,8 +1,8 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../db/db');
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../db/db.js';
 
 const ParticipantStatistics = sequelize.define('ParticipantStatistics', {
-  participant_statistics_id: {
+  statistic_id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
@@ -10,26 +10,14 @@ const ParticipantStatistics = sequelize.define('ParticipantStatistics', {
   match_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'matches',
-      key: 'match_id',
-    },
   },
   participant_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'participants',
-      key: 'participant_id',
-    },
   },
   agent_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'agents',
-      key: 'agent_id',
-    },
   },
   kills: {
     type: DataTypes.INTEGER,
@@ -51,7 +39,7 @@ const ParticipantStatistics = sequelize.define('ParticipantStatistics', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  mvp: {
+  MVP: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
   },
@@ -68,4 +56,4 @@ const ParticipantStatistics = sequelize.define('ParticipantStatistics', {
   timestamps: false,
 });
 
-module.exports = ParticipantStatistics;
+export default ParticipantStatistics;

@@ -1,8 +1,8 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../db/db');
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../db/db.js';
 
 const ChampionshipStatistics = sequelize.define('ChampionshipStatistics', {
-  championship_statistics_id: {
+  statistic_id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
@@ -10,26 +10,14 @@ const ChampionshipStatistics = sequelize.define('ChampionshipStatistics', {
   championship_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'championships',
-      key: 'championship_id',
-    },
   },
   participant_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'participants',
-      key: 'participant_id',
-    },
   },
   team_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'teams',
-      key: 'team_id',
-    },
   },
   kills: {
     type: DataTypes.INTEGER,
@@ -51,7 +39,7 @@ const ChampionshipStatistics = sequelize.define('ChampionshipStatistics', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  mvps: {
+  MVPs: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
@@ -64,4 +52,4 @@ const ChampionshipStatistics = sequelize.define('ChampionshipStatistics', {
   timestamps: false,
 });
 
-module.exports = ChampionshipStatistics;
+export default ChampionshipStatistics;

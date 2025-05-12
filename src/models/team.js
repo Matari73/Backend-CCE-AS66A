@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../db/db');
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../db/db.js';
 
 const Team = sequelize.define('Team', {
   team_id: {
@@ -18,14 +18,10 @@ const Team = sequelize.define('Team', {
   user_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'users',
-      key: 'user_id',
-    },
   },
 }, {
   tableName: 'teams',
   timestamps: false,
 });
 
-module.exports = Team;
+export default Team;
