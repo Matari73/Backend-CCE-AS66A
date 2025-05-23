@@ -2,6 +2,7 @@ import express from 'express';
 import authRoutes from './authRoutes.js';
 import userRoutes from './userRoutes.js';
 import championshipRoutes from './championshipRoutes.js';
+import teamRoutes from './teamRoutes.js';
 
 const configureRoutes = (app) => {
     // Middlewares globais
@@ -16,6 +17,7 @@ const configureRoutes = (app) => {
     app.use('/auth', authRoutes); 
     app.use('/users', userRoutes);
     app.use('/championships', championshipRoutes);
+    app.use('/teams', teamRoutes);
 
 };
 
