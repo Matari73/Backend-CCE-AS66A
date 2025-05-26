@@ -1,5 +1,5 @@
 import { Team } from '../models/Team.js';
-import { Participant } from '../models/Participant.js';
+import { Participant } from '../models/participant.js';
 import { sequelize } from '../db/db.js';
 import { teamSchema } from '../schemas/team.schema.js';
 import { z } from 'zod';
