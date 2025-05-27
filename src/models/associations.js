@@ -75,3 +75,14 @@ ParticipantStatistics.belongsTo(Agent, { foreignKey: 'agent_id' });
 Team.hasMany(ChampionshipStatistics, { foreignKey: 'team_id' });
 ChampionshipStatistics.belongsTo(Team, { foreignKey: 'team_id' });
 
+export {
+    User,
+    Team,
+    Participant,
+    Championship,
+    Match,
+    Subscription,
+    Agent,
+    ParticipantStatistics,
+    ChampionshipStatistics,
+};

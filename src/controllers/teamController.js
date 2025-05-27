@@ -1,5 +1,5 @@
-import { Team } from '../models/Team.js';
-import { Participant } from '../models/participant.js';
+import Team from '../models/team.js';
+import Participant from '../models/participant.js';
 import { sequelize } from '../db/db.js';
 import { teamSchema } from '../schemas/team.schema.js';
 import { z } from 'zod';
@@ -24,17 +24,17 @@ const validateTeamComposition = async (teamId) => {
 
 const verifyTeamManager = async (userId, teamId, transaction) => {
   const team = await Team.findByPk(teamId, { transaction });
-  
+
   if (!team) throw new Error('Equipe não encontrada');
   if (team.user_id !== userId) throw new Error('Ação permitida apenas para o gerente do campeonato');
-  
+
   return team;
 };
 
 // CONTROLADORES PRINCIPAIS:
 export const createTeam = async (req, res) => {
   const transaction = await sequelize.transaction();
-  
+
   try {
     // Validação dos dados de entrada com Zod
     const validatedData = teamSchema.parse({
@@ -56,7 +56,7 @@ export const createTeam = async (req, res) => {
     });
   } catch (error) {
     await transaction.rollback();
-    
+
     // Tratamento específico para erros do Zod
     if (error instanceof z.ZodError) {
       return res.status(400).json({
@@ -67,7 +67,7 @@ export const createTeam = async (req, res) => {
         }))
       });
     }
-    
+
     res.status(400).json({ message: error.message });
   }
 };
@@ -94,16 +94,16 @@ export const getTeamById = async (req, res) => {
 
     res.status(200).json(team);
   } catch (error) {
-    res.status(500).json({ 
+    res.status(500).json({
       message: 'Erro ao buscar equipe',
-      error: error.message 
+      error: error.message
     });
   }
 };
 
 export const updateTeam = async (req, res) => {
   const transaction = await sequelize.transaction();
-  
+
   try {
     const { teamId } = req.params;
 
@@ -125,14 +125,14 @@ export const updateTeam = async (req, res) => {
     });
   } catch (error) {
     await transaction.rollback();
-    
+
     if (error instanceof z.ZodError) {
       return res.status(400).json({
         message: 'Dados de atualização inválidos',
         errors: error.errors
       });
     }
-    
+
     const status = error.message.includes('não encontrada') ? 404 : 403;
     res.status(status).json({ message: error.message });
   }
@@ -151,22 +151,22 @@ export const getAllTeams = async (req, res) => {
 
     res.status(200).json(teams);
   } catch (error) {
-    res.status(500).json({ 
+    res.status(500).json({
       message: 'Erro ao listar equipes',
-      error: error.message 
+      error: error.message
     });
   }
 };
 
 export const deleteTeam = async (req, res) => {
   const transaction = await sequelize.transaction();
-  
+
   try {
     const { teamId } = req.params;
 
     await verifyTeamManager(req.user.user_id, teamId, transaction);
 
-    await Team.destroy({ 
+    await Team.destroy({
       where: { team_id: teamId },
       transaction
     });
@@ -183,20 +183,20 @@ export const deleteTeam = async (req, res) => {
 export const validateTeam = async (req, res) => {
   try {
     const { teamId } = req.params;
-    
+
     const team = await Team.findByPk(teamId);
     if (!team) {
       return res.status(404).json({ message: 'Equipe não encontrada' });
     }
 
     await validateTeamComposition(teamId);
-    
-    res.status(200).json({ 
+
+    res.status(200).json({
       message: 'Composição da equipe é válida',
       valid: true
     });
   } catch (error) {
-    res.status(400).json({ 
+    res.status(400).json({
       message: error.message,
       valid: false
     });
