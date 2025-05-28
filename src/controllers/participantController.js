@@ -1,5 +1,5 @@
 import Participant from '../models/participant.js';
-import { participantSchema } from '../schemas/participantSchema.js';
+import { participantSchema } from '../schemas/participant.schema.js';
 
 export const createParticipant = async (req, res) => {
   try {
