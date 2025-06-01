@@ -1,6 +1,7 @@
 import express from 'express';
 import { sequelize, connectInDatabase } from './db/db.js';
 import routes from './routes/index.js';
+import seed from './scripts/seed.js';
 import './models/associations.js';
 
 const app = express();
