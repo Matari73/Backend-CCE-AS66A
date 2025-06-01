@@ -1,4 +1,3 @@
-// src/controllers/participantStatisticsController.js
 import ParticipantStatistics from '../models/participantStatistics.js';
 
 export const createParticipantStats = async (req, res) => {
