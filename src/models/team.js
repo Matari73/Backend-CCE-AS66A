@@ -11,10 +11,6 @@ const Team = sequelize.define('Team', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  ranking: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
   user_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
