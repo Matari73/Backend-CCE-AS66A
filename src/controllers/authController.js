@@ -10,8 +10,7 @@ export let tokenBlacklist = [];
 const generateToken = (user) => {
   return jwt.sign(
     { 
-      user_id: user.user_id, 
-      isOrganizer: user.isOrganizer 
+      user_id: user.user_id
     }, 
     process.env.JWT_SECRET, 
     { expiresIn: '1h' }
@@ -19,7 +18,7 @@ const generateToken = (user) => {
 };
 
 export const register = async (req, res) => {
-  const { name, email, password, isOrganizer } = req.body;
+  const { name, email, password } = req.body;
 
   // Validações básicas
   if (!name || !email || !password) {
@@ -40,8 +39,7 @@ export const register = async (req, res) => {
     const user = await User.create({
       name,
       email,
-      password: hashedPassword,
-      isOrganizer: isOrganizer || false
+      password: hashedPassword
     });
 
     // Gera token
@@ -52,8 +50,7 @@ export const register = async (req, res) => {
       user: {
         user_id: user.user_id,
         name: user.name,
-        email: user.email,
-        isOrganizer: user.isOrganizer
+        email: user.email
       },
       token
     });
@@ -89,8 +86,7 @@ export const login = async (req, res) => {
       user: {
         user_id: user.user_id,
         name: user.name,
-        email: user.email,
-        isOrganizer: user.isOrganizer
+        email: user.email
       },
       token
     });

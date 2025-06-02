@@ -25,12 +25,3 @@ export const authMiddleware = (req, res, next) => {
     next();
   });
 };
-
-export const organizerOnly = (req, res, next) => {
-  if (!req.user.isOrganizer) {
-    return res.status(403).json({ 
-      message: 'Acesso negado. Somente organizadores permitidos.' 
-    });
-  }
-  next();
-};
