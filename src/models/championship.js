@@ -35,6 +35,10 @@ const Championship = sequelize.define('Championship', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  prize: {
+    type: DataTypes.STRING,
+    allowNull: true,  // false, se resolvermos ser obrigatorio ter uma premiação
+  },
   user_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
