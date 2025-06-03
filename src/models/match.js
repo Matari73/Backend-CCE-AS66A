@@ -1,6 +1,11 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../db/db.js';
 
+const mapOptions = [
+  'Bind', 'Ascent', 'Icebox', 'Haven', 'Lotus',
+  'Sunset', 'Abyss', 'Breeze', 'Fracture', 'Pearl', 'Split'
+];
+
 const Match = sequelize.define('Match', {
   match_id: {
     type: DataTypes.INTEGER,
@@ -27,6 +32,10 @@ const Match = sequelize.define('Match', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  bracket: {
+    type: DataTypes.ENUM('upper', 'lower'),
+    allowNull: true
+  },
   winner_team_id: {
     type: DataTypes.INTEGER,
     allowNull: true,
@@ -36,7 +45,7 @@ const Match = sequelize.define('Match', {
     allowNull: true,
   },
   map: {
-    type: DataTypes.STRING,
+    type: DataTypes.ENUM(...mapOptions),
     allowNull: false,
   },
 }, {
