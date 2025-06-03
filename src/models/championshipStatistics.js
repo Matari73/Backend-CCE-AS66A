@@ -10,14 +10,26 @@ const ChampionshipStatistics = sequelize.define('ChampionshipStatistics', {
   championship_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    references: {
+      model: 'championships',
+      key: 'championship_id'
+    }
   },
   participant_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    references: {
+      model: 'participants',
+      key: 'participant_id'
+    }
   },
   team_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    references: {
+      model: 'teams',
+      key: 'team_id'
+    }
   },
   kills: {
     type: DataTypes.INTEGER,

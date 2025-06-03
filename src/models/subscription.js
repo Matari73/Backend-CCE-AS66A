@@ -10,10 +10,18 @@ const Subscription = sequelize.define('Subscription', {
   championship_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    references: {
+      model: 'championships',
+      key: 'championship_id'
+    }
   },
   team_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    references: {
+      model: 'teams',
+      key: 'team_id'
+    }
   },
   subscription_date: {
     type: DataTypes.DATE,

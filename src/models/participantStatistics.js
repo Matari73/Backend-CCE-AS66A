@@ -10,14 +10,26 @@ const ParticipantStatistics = sequelize.define('ParticipantStatistics', {
   match_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    references: {
+      model: 'matches',
+      key: 'match_id'
+    }
   },
   participant_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    references: {
+      model: 'participants',
+      key: 'participant_id'
+    }
   },
   agent_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    references: {
+      model: 'agents',
+      key: 'agent_id'
+    }
   },
   kills: {
     type: DataTypes.INTEGER,
