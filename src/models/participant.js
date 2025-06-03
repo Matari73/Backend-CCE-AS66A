@@ -26,6 +26,10 @@ const Participant = sequelize.define('Participant', {
   team_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    references: {
+      model: 'teams',
+      key: 'team_id'
+    }
   },
   is_coach: {
     type: DataTypes.BOOLEAN,
@@ -34,6 +38,10 @@ const Participant = sequelize.define('Participant', {
   user_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    references: {
+      model: 'users',
+      key: 'user_id'
+    }
   },
 }, {
   tableName: 'participants',

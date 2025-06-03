@@ -10,14 +10,26 @@ const Match = sequelize.define('Match', {
   championship_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    references: {
+      model: 'championships',
+      key: 'championship_id'
+    }
   },
   teamA_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    references: {
+      model: 'teams',
+      key: 'team_id'
+    }
   },
   teamB_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    references: {
+      model: 'teams',
+      key: 'team_id'
+    }
   },
   date: {
     type: DataTypes.DATE,
@@ -30,6 +42,10 @@ const Match = sequelize.define('Match', {
   winner_team_id: {
     type: DataTypes.INTEGER,
     allowNull: true,
+    references: {
+      model: 'teams',
+      key: 'team_id'
+    }
   },
   score: {
     type: DataTypes.JSONB,
