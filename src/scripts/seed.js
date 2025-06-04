@@ -2,7 +2,7 @@ import { sequelize } from '../db/db.js';
 import User from '../models/user.js';
 import Team from '../models/team.js';
 import Championship from '../models/championship.js';
-import Agent from '../models/agent.js'; // model com apenas 'name'
+import Agent from '../models/agent.js';
 
 const seed = async () => {
     try {
