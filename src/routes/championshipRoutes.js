@@ -5,7 +5,8 @@ import {
   getChampionshipById,
   updateChampionship,
   deleteChampionship,
-  generateBracket
+  generateBracket,
+  generateBracketNextPhase
 } from '../controllers/championshipController.js';
 import { validateSchema } from '../middlewares/validateSchema.js';
 import { championshipSchema } from '../schemas/championship.schema.js';
@@ -19,5 +20,6 @@ router.get('/:id', getChampionshipById);
 router.put('/:id', validateSchema(championshipSchema), updateChampionship);
 router.delete('/:id', deleteChampionship);
 router.post('/:id/generate-bracket', authMiddleware, generateBracket)
+router.post('/:id/generate-next-phase', authMiddleware, generateBracketNextPhase)
 
 export default router;

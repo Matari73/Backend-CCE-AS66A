@@ -1,5 +1,5 @@
 import Championship from '../models/championship.js';
-import { generateSingleEliminationBracket, generateDoubleEliminationBracket } from '../services/championshipService.js';
+import { generateSingleEliminationBracket, generateDoubleEliminationBracket, handleSingleEliminationNextPhase, handleDoubleEliminationNextPhase } from '../services/championshipService.js';
 
 export const createChampionship = async (req, res) => {
   try {
@@ -72,6 +72,31 @@ export const generateBracket = async (req, res) => {
       result = await generateSingleEliminationBracket(id);
     } else {
       result = await generateDoubleEliminationBracket(id);
+    }
+
+    return res.status(201).json({
+      message: `Chaveamento (${format}) gerado com sucesso!`,
+      data: result
+    });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+export const generateBracketNextPhase = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { format } = req.body;
+
+    if (!['single', 'double'].includes(format)) {
+      return res.status(400).json({ message: 'Formato inválido. Use "single" ou "double"' });
+    }
+
+    let result;
+    if (format === 'single') {
+      result = handleSingleEliminationNextPhase(id);
+    } else {
+      result = handleDoubleEliminationNextPhase(id);
     }
 
     return res.status(201).json({
