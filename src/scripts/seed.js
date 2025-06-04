@@ -211,13 +211,9 @@ const runSeed = async () => {
     }
 };
 
-<<<<<<< HEAD
 // Run seed if called directly
 if (process.argv[1] === new URL(import.meta.url).pathname) {
     runSeed();
 }
 
 export default seed;
-=======
-export default seed;
->>>>>>> e2c6b86 (Adding initial seed)
