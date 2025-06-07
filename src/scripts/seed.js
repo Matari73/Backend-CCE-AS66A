@@ -12,7 +12,7 @@ const seed = async () => {
         const user = await User.create({
             name: 'Usuário Teste',
             email: 'teste@seed.com',
-            password: '123456',
+            password: '12345678',
             isOrganizer: true,
         });
 

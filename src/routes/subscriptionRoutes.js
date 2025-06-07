@@ -4,7 +4,9 @@ import {
     getAllSubscriptions,
     getSubscriptionById,
     updateSubscription,
-    deleteSubscription
+    deleteSubscription,
+    getSubscriptionBySwitchingCode,
+    updateSubscriptionScore
 } from '../controllers/subscriptionController.js';
 import { authMiddleware } from '../middlewares/authMiddleware.js';
 import { validateSchema } from '../middlewares/validateSchema.js';

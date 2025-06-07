@@ -135,12 +135,11 @@ export const deleteTeam = async (req, res) => {
 
 export const validateTeam = async (req, res) => {
   try {
-    const result = await validateTeamComposition(req.params.teamId);
-    res.status(result.status).json({
-      valid: result.valid,
-      message: result.message
+    const validation = await validateTeamComposition(req.params.teamId);
+    res.status(validation.status).json({
+      valid: validation.valid,
+      message: validation.message
     });
-    
   } catch (error) {
     res.status(500).json({
       valid: false,
