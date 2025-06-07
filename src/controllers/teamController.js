@@ -134,7 +134,6 @@ export const validateTeam = async (req, res) => {
       valid: validation.valid,
       message: validation.message
     });
-    
   } catch (error) {
     res.status(500).json({
       valid: false,
