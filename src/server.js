@@ -1,14 +1,14 @@
 import express from 'express';
 import {
-  createChampionship,
-  getAllChampionships,
-  getChampionshipById,
-  updateChampionship,
-  deleteChampionship,
-  generateBracket,
-  generateNextPhase,
-  getChampionshipMatches,
-  bulkUpdateMatches
+    createChampionship,
+    getAllChampionships,
+    getChampionshipById,
+    updateChampionship,
+    deleteChampionship,
+    generateBracket,
+    generateNextPhase,
+    getChampionshipMatches,
+    bulkUpdateMatches
 } from '../controllers/championshipController.js';
 import { validateSchema } from '../middlewares/validateSchema.js';
 import { championshipSchema } from '../schemas/championship.schema.js';

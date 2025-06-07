@@ -1,21 +1,19 @@
 import express from 'express';
 import {
-  createMatch,
   getAllMatches,
   getMatchById,
-  updateMatch,
-  deleteMatch
+  bulkUpdateMatches,
+  getChampionshipMatches,
+  generateNextRound
 } from '../controllers/matchController.js';
-import {authMiddleware} from '../middlewares/authMiddleware.js';
-import { validateSchema } from '../middlewares/validateSchema.js';
-import { matchSchema } from '../schemas/match.schema.js';
+import { authMiddleware } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
 router.get('/', getAllMatches);
-router.get('/:matchId', getMatchById);
-router.post('/', authMiddleware, validateSchema(matchSchema), createMatch);
-router.put('/:matchId', authMiddleware, validateSchema(matchSchema), updateMatch);
-router.delete('/:matchId', authMiddleware, deleteMatch);
+router.get('/:id', getMatchById);
+router.put('/bulk-update', authMiddleware, bulkUpdateMatches);
+router.get('/championships/:championshipId/matches', getChampionshipMatches);
+router.post('/championships/:championshipId/generate-next-round', authMiddleware, generateNextRound);
 
 export default router;

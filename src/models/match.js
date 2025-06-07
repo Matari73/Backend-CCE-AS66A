@@ -45,7 +45,7 @@ const Match = sequelize.define('Match', {
     allowNull: false,
   },
   bracket: {
-    type: DataTypes.ENUM('upper', 'lower'),
+    type: DataTypes.ENUM('upper', 'lower', 'final'),
     allowNull: true
   },
   winner_team_id: {
