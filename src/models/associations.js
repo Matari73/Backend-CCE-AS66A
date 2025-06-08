@@ -31,6 +31,9 @@ Participant.belongsTo(Team, { foreignKey: 'team_id' });
 Team.hasMany(Subscription, { foreignKey: 'team_id' });
 Subscription.belongsTo(Team, { foreignKey: 'team_id' });
 
+Team.hasMany(ChampionshipStatistics, { foreignKey: 'team_id' });
+ChampionshipStatistics.belongsTo(Team, { foreignKey: 'team_id' });
+
 // --------------------
 // Championship relations
 // --------------------
@@ -44,9 +47,24 @@ Subscription.belongsTo(Championship, { foreignKey: 'championship_id' });
 Championship.hasMany(ChampionshipStatistics, { foreignKey: 'championship_id' });
 ChampionshipStatistics.belongsTo(Championship, { foreignKey: 'championship_id' });
 
+// Many-to-Many: Championship <-> Team via Subscription
+Championship.belongsToMany(Team, {
+  through: Subscription,
+  foreignKey: 'championship_id'
+});
+Team.belongsToMany(Championship, {
+  through: Subscription,
+  foreignKey: 'team_id'
+});
+
 // --------------------
 // Match relations
 // --------------------
+
+// Relacionamentos nomeados com Team
+Match.belongsTo(Team, { as: 'TeamA', foreignKey: 'teamA_id' });
+Match.belongsTo(Team, { as: 'TeamB', foreignKey: 'teamB_id' });
+Match.belongsTo(Team, { as: 'Winner', foreignKey: 'winner_team_id' });
 
 Match.hasMany(ParticipantStatistics, { foreignKey: 'match_id' });
 ParticipantStatistics.belongsTo(Match, { foreignKey: 'match_id' });
@@ -69,20 +87,17 @@ Agent.hasMany(ParticipantStatistics, { foreignKey: 'agent_id' });
 ParticipantStatistics.belongsTo(Agent, { foreignKey: 'agent_id' });
 
 // --------------------
-// ChampionshipStatistics relations (Team)
+// Export models
 // --------------------
 
-Team.hasMany(ChampionshipStatistics, { foreignKey: 'team_id' });
-ChampionshipStatistics.belongsTo(Team, { foreignKey: 'team_id' });
-
 export {
-    User,
-    Team,
-    Participant,
-    Championship,
-    Match,
-    Subscription,
-    Agent,
-    ParticipantStatistics,
-    ChampionshipStatistics,
+  User,
+  Team,
+  Participant,
+  Championship,
+  Match,
+  Subscription,
+  Agent,
+  ParticipantStatistics,
+  ChampionshipStatistics,
 };

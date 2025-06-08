@@ -6,7 +6,8 @@ import {
   updateMatch,
   deleteMatch
 } from '../controllers/matchController.js';
-import {authMiddleware} from '../middlewares/authMiddleware.js';
+
+import authMiddleware from '../middlewares/authMiddleware.js';
 import { validateSchema } from '../middlewares/validateSchema.js';
 import { matchSchema } from '../schemas/match.schema.js';
 
