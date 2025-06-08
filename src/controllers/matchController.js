@@ -3,13 +3,39 @@ import Team from '../models/team.js';
 import Championship from '../models/championship.js';
 import { handleSingleEliminationNextPhase, handleDoubleEliminationNextPhase } from '../services/championshipService.js';
 
+// Criar partida
 export const createMatch = async (req, res) => {
-    try {
-        const match = await Match.create(req.body);
-        res.status(201).json(match);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
+  try {
+    const {
+      championship_id,
+      teamA_id,
+      teamB_id,
+      date,
+      stage,
+      winner_team_id,
+      score,
+      map
+    } = req.body;
+
+    const newMatch = await Match.create({
+      championship_id,
+      teamA_id,
+      teamB_id,
+      date,
+      stage,
+      winner_team_id,
+      score,
+      map
+    });
+
+    res.status(201).json({
+      message: 'Partida criada com sucesso.',
+      match: newMatch
+    });
+  } catch (error) {
+    console.error('Erro ao criar partida:', error);
+    res.status(500).json({ error: 'Erro ao criar a partida.' });
+  }
 };
 
 export const getAllMatches = async (req, res) => {
@@ -56,6 +82,7 @@ export const getAllMatches = async (req, res) => {
     }
 };
 
+// Buscar partida por ID
 export const getMatchById = async (req, res) => {
     try {
         const { id } = req.params;
@@ -90,6 +117,8 @@ export const getMatchById = async (req, res) => {
             error: 'Failed to fetch match'
         });
     }
+
+    res.status(200).json(match);
 };
 
 export const bulkUpdateMatches = async (req, res) => {
@@ -155,7 +184,11 @@ export const bulkUpdateMatches = async (req, res) => {
             error: 'Failed to bulk update matches'
         });
     }
-};
+
+    await match.update(req.body);
+    res.status(200).json({ message: 'Partida atualizada com sucesso.', match });
+}
+
 
 export const getChampionshipMatches = async (req, res) => {
     try {
@@ -270,4 +303,7 @@ export const generateNextRound = async (req, res) => {
             error: 'Failed to generate next round'
         });
     }
+
+    await match.destroy();
+    res.status(200).json({ message: 'Partida removida com sucesso.' });
 };

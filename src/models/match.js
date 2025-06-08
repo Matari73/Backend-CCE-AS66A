@@ -1,11 +1,6 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../db/db.js';
 
-const mapOptions = [
-  'Bind', 'Ascent', 'Icebox', 'Haven', 'Lotus',
-  'Sunset', 'Abyss', 'Breeze', 'Fracture', 'Pearl', 'Split'
-];
-
 const Match = sequelize.define('Match', {
   match_id: {
     type: DataTypes.INTEGER,
@@ -37,8 +32,8 @@ const Match = sequelize.define('Match', {
     }
   },
   date: {
-    type: DataTypes.DATE,
-    allowNull: false,
+    type: DataTypes.STRING, // alterado de DATE para STRING
+    allowNull: true
   },
   stage: {
     type: DataTypes.STRING,
@@ -58,15 +53,31 @@ const Match = sequelize.define('Match', {
   },
   score: {
     type: DataTypes.JSONB,
-    allowNull: true,
+    allowNull: true
   },
   map: {
-    type: DataTypes.ENUM(...mapOptions),
-    allowNull: false,
+    type: DataTypes.STRING,
+    allowNull: false
   },
+  status: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'Pre-Agendada'
+  }
 }, {
   tableName: 'matches',
   timestamps: false,
+});
+
+// Função para atualizar o status com base na data e score
+Match.beforeSave((match) => {
+  if (match.date && match.score) {
+    match.status = 'Encerrada';
+  } else if (match.date && !match.score) {
+    match.status = 'Agendada';
+  } else {
+    match.status = 'Pre-Agendada';
+  }
 });
 
 export default Match;
