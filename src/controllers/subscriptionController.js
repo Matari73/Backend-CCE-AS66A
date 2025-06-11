@@ -1,38 +1,50 @@
 import Subscription from '../models/subscription.js';
 import { validateTeamComposition } from '../services/teamValidation.js';
+import { validateSubscription } from '../services/subscriptionValidation.js';
 
 export const createSubscription = async (req, res) => {
-    try {
-        // Validação retorna objeto com {valid, status, message}
-        const validation = await validateTeamComposition(req.body.team_id);
-        
-        if (!validation.valid) {
-            return res.status(validation.status).json({ 
-                error: 'Time inválido',
-                details: validation.message
-            });
-        }
-        
-        const subscription = await Subscription.create({
-            championship_id: req.body.championship_id,
-            team_id: req.body.team_id,
-            subscription_date: req.body.subscription_date || new Date()
-        });
-        
-        res.status(201).json({
-            message: 'Inscrição criada com sucesso',
-            subscription: {
-                subscription_id: subscription.subscription_id,
-                championship_id: subscription.championship_id,
-                team_id: subscription.team_id
-            }
-        });
-    } catch (error) {
-        res.status(500).json({ 
-            error: 'Falha ao criar inscrição',
-            details: error.message 
-        });
+  try {
+    const { championship_id, team_id } = req.body;
+
+    const teamValidation = await validateTeamComposition(team_id);
+    if (!teamValidation.valid) {
+      return res.status(teamValidation.status).json({
+        error: 'Time inválido',
+        details: teamValidation.message
+      });
     }
+
+    // Valida regras de inscrição
+    const subscriptionValidation = await validateSubscription(championship_id, team_id);
+    if (!subscriptionValidation.valid) {
+      return res.status(subscriptionValidation.status).json({
+        error: 'Inscrição inválida',
+        details: subscriptionValidation.details || subscriptionValidation.message
+      });
+    }
+
+    const subscription = await Subscription.create({
+      championship_id,
+      team_id,
+      subscription_date: req.body.subscription_date || new Date()
+    });
+
+    res.status(201).json({
+      message: 'Inscrição criada com sucesso',
+      subscription: {
+        subscription_id: subscription.subscription_id,
+        championship_id: subscription.championship_id,
+        team_id: subscription.team_id
+      }
+    });
+
+  } catch (error) {
+    console.error('Erro ao criar inscrição:', error);
+    res.status(500).json({ 
+      error: 'Falha ao criar inscrição',
+      details: error.message 
+    });
+  }
 };
 
 export const getAllSubscriptions = async (req, res) => {
@@ -75,37 +87,64 @@ export const getSubscriptionById = async (req, res) => {
 };
 
 export const updateSubscription = async (req, res) => {
-    try {
-        const subscription = await Subscription.findByPk(req.params.subscriptionId);
-        if (!subscription) {
-            return res.status(404).json({ 
-                error: 'Inscrição não encontrada',
-                details: `ID ${req.params.subscriptionId} não existe`
-            });
-        }
+  try {
+    const { subscriptionId } = req.params;
+    const { championship_id, team_id } = req.body;
 
-        // Valida a composição se o team_id for atualizado
-        if (req.body.team_id && req.body.team_id !== subscription.team_id) {
-            await validateTeamComposition(req.body.team_id);
-        }
-        
-        await subscription.update({
-            championship_id: req.body.championship_id,
-            team_id: req.body.team_id,
-            subscription_date: req.body.subscription_date
-        });
-        
-        res.json({
-            message: 'Inscrição atualizada com sucesso',
-            subscription
-        });
-    } catch (error) {
-        const status = error.message.includes('completa') ? 422 : 400;
-        res.status(status).json({ 
-            error: 'Falha ao atualizar inscrição',
-            details: error.message 
-        });
+    const subscription = await Subscription.findByPk(subscriptionId);
+    if (!subscription) {
+      return res.status(404).json({ 
+        error: 'Inscrição não encontrada'
+      });
     }
+
+    // Valida se houve mudança relevante
+    const teamChanged = team_id && team_id !== subscription.team_id;
+    const championshipChanged = championship_id && championship_id !== subscription.championship_id;
+
+    if (teamChanged || championshipChanged) {
+      // Valida composição do time se o time foi alterado
+      if (teamChanged) {
+        const teamValidation = await validateTeamComposition(team_id);
+        if (!teamValidation.valid) {
+          return res.status(teamValidation.status).json({
+            error: 'Novo time inválido',
+            details: teamValidation.message
+          });
+        }
+      }
+
+      // Valida regras de inscrição
+      const finalChampionshipId = championshipChanged ? championship_id : subscription.championship_id;
+      const finalTeamId = teamChanged ? team_id : subscription.team_id;
+
+      const validation = await validateSubscription(finalChampionshipId, finalTeamId);
+      if (!validation.valid) {
+        return res.status(validation.status).json({
+          error: 'Inscrição inválida',
+          details: validation.details || validation.message
+        });
+      }
+    }
+
+    await subscription.update({
+      championship_id: championship_id || subscription.championship_id,
+      team_id: team_id || subscription.team_id,
+      subscription_date: req.body.subscription_date || subscription.subscription_date
+    });
+
+    res.json({
+      message: 'Inscrição atualizada com sucesso',
+      subscription
+    });
+
+  } catch (error) {
+    console.error('Erro ao atualizar inscrição:', error);
+    res.status(500).json({ 
+      error: 'Falha ao atualizar inscrição',
+      details: error.message 
+    });
+  }
 };
 
 export const deleteSubscription = async (req, res) => {

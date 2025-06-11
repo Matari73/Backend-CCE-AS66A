@@ -7,7 +7,7 @@ import {
   deleteMatch
 } from '../controllers/matchController.js';
 
-import { matchUpdateSchema } from '../schemas/matchUpdate.schema.js';
+import { matchUpdateSchema } from '../schemas/matchUpdate.schema.js'; // ✅ manter esta linha
 import { authMiddleware } from '../middlewares/authMiddleware.js';
 import { validateSchema } from '../middlewares/validateSchema.js';
 import { matchSchema } from '../schemas/match.schema.js';
@@ -20,7 +20,5 @@ router.post('/', authMiddleware, validateSchema(matchSchema), createMatch);
 router.put('/:matchId', authMiddleware, validateSchema(matchUpdateSchema), updateMatch);
 router.delete('/:matchId', authMiddleware, deleteMatch);
 
-
 export default router;
-
 
