@@ -3,7 +3,8 @@ import Team from '../models/team.js';
 import Championship from '../models/championship.js';
 import { handleSingleEliminationNextPhase, handleDoubleEliminationNextPhase } from '../services/championshipService.js';
 
-// Criar partida
+
+//criar partida
 export const createMatch = async (req, res) => {
   try {
     const {
@@ -82,7 +83,7 @@ export const getAllMatches = async (req, res) => {
     }
 };
 
-// Buscar partida por ID
+
 export const getMatchById = async (req, res) => {
     try {
         const { id } = req.params;

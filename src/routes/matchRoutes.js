@@ -12,4 +12,7 @@ router.get('/', getAllMatches);
 router.get('/:id', getMatchById);
 router.put('/bulk-update', authMiddleware, bulkUpdateMatches);
 
+
 export default router;
+
+
