@@ -48,7 +48,9 @@ const seed = async () => {
         await Agent.bulkCreate(agentsData);
 
         console.log('✅ Seed executado com sucesso!');
-        process.exit(0);
+        //process.exit(0); - Removido para evitar de apagar o banco de dados antes de rodar os testes!!!
+
+
     } catch (err) {
         console.error('Erro ao rodar o seed:', err);
         process.exit(1);
