@@ -67,8 +67,6 @@ const generateSingleEliminationBracket = async (championshipId) => {
 
 const handleSingleEliminationNextPhase = async (championshipId) => {
     try {
-        console.log(`🔄 Starting handleSingleEliminationNextPhase for championship ${championshipId}`);
-
         const completedMatches = await Match.findAll({
             where: {
                 championship_id: championshipId,
@@ -77,15 +75,11 @@ const handleSingleEliminationNextPhase = async (championshipId) => {
             order: [['date', 'ASC']]
         });
 
-        console.log(`✅ Found ${completedMatches.length} completed matches`);
-
         if (completedMatches.length === 0) {
             throw new Error('Nenhuma partida completada encontrada');
         }
 
         const stages = [...new Set(completedMatches.map(match => match.stage))];
-        console.log('📊 Stages found:', stages);
-
         const stageOrder = ['Rodada 1', 'Rodada 2', 'Oitavas de final', 'Quartas de final', 'Semifinal', 'Final'];
         let currentStage = null;
 
@@ -94,8 +88,6 @@ const handleSingleEliminationNextPhase = async (championshipId) => {
                 currentStage = stage;
             }
         }
-
-        console.log(`🎯 Current stage: ${currentStage}`);
 
         if (!currentStage) {
             throw new Error(`Não foi possível identificar a fase atual. Stages encontrados: ${stages.join(', ')}`);
@@ -118,8 +110,6 @@ const handleSingleEliminationNextPhase = async (championshipId) => {
             .filter(match => match.winner_team_id)
             .map(match => match.winner_team_id);
 
-        console.log(`🏆 Winners from ${currentStage}:`, winners);
-
         if (winners.length < 2) {
             throw new Error(`Número insuficiente de vencedores (${winners.length}) para a próxima fase`);
         }
@@ -130,7 +120,6 @@ const handleSingleEliminationNextPhase = async (championshipId) => {
         }
 
         const nextStage = stageOrder[nextStageIndex];
-        console.log(`➡️ Next stage: ${nextStage}`);
 
         const nextPhaseMatches = [];
         for (let i = 0; i < winners.length; i += 2) {
@@ -148,8 +137,6 @@ const handleSingleEliminationNextPhase = async (championshipId) => {
             }
         }
 
-        console.log(`📝 Creating ${nextPhaseMatches.length} matches for ${nextStage}`);
-
         const createdMatches = await Match.bulkCreate(nextPhaseMatches);
 
         return {
@@ -159,7 +146,7 @@ const handleSingleEliminationNextPhase = async (championshipId) => {
         };
 
     } catch (error) {
-        console.error('❌ Error in handleSingleEliminationNextPhase:', error);
+        console.error('Error in handleSingleEliminationNextPhase:', error);
         throw error;
     }
 };
@@ -199,8 +186,6 @@ const generateDoubleEliminationBracket = async (championshipId) => {
 
 const handleDoubleEliminationNextPhase = async (championshipId) => {
     try {
-        console.log(`🔄 Starting handleDoubleEliminationNextPhase for championship ${championshipId}`);
-
         const allMatches = await Match.findAll({
             where: { championship_id: championshipId },
             order: [['date', 'ASC']]
@@ -208,8 +193,6 @@ const handleDoubleEliminationNextPhase = async (championshipId) => {
 
         const completedMatches = allMatches.filter(match => match.winner_team_id);
         const pendingMatches = allMatches.filter(match => !match.winner_team_id);
-
-        console.log(`✅ Found ${completedMatches.length} completed, ${pendingMatches.length} pending matches`);
 
         if (pendingMatches.length > 0) {
             throw new Error(`Existem ${pendingMatches.length} partidas pendentes. Complete todas antes de gerar a próxima fase.`);
@@ -227,19 +210,8 @@ const handleDoubleEliminationNextPhase = async (championshipId) => {
         const upperBracketMatches = completedMatches.filter(match => match.bracket === 'upper');
         const lowerBracketMatches = completedMatches.filter(match => match.bracket === 'lower');
 
-        console.log(`📊 Upper matches: ${upperBracketMatches.length}, Lower matches: ${lowerBracketMatches.length}`);
-        console.log(`🔍 All lower matches:`, lowerBracketMatches.map(m => ({
-            match_id: m.match_id,
-            stage: m.stage,
-            teamA: m.teamA_id,
-            teamB: m.teamB_id,
-            winner: m.winner_team_id
-        })));
-
         const upperChampion = getUpperBracketChampion(upperBracketMatches);
         const lowerChampion = getLowerBracketChampion(lowerBracketMatches);
-
-        console.log(`🏆 Upper Champion: ${upperChampion}, Lower Champion: ${lowerChampion}`);
 
         if (upperChampion && lowerChampion) {
             const grandFinalMatch = {
@@ -252,7 +224,6 @@ const handleDoubleEliminationNextPhase = async (championshipId) => {
                 map: getRandomMap()
             };
 
-            console.log(`🎯 Creating Grand Final: Team ${upperChampion} vs Team ${lowerChampion}`);
             const createdMatch = await Match.create(grandFinalMatch);
 
             return {
@@ -266,35 +237,21 @@ const handleDoubleEliminationNextPhase = async (championshipId) => {
             };
         }
 
-        // Continuar lógica normal se não há campeões ainda
-        // Identificar as fases atuais
+        const nextMatches = [];
+        
         const upperStages = [...new Set(upperBracketMatches.map(m => m.stage))];
         const lowerStages = [...new Set(lowerBracketMatches.map(m => m.stage))];
-
+        
         const currentUpperStage = upperStages[upperStages.length - 1];
         const currentLowerStage = lowerStages.length > 0 ? lowerStages[lowerStages.length - 1] : null;
 
-        console.log(`🎯 Current upper stage: ${currentUpperStage}, lower stage: ${currentLowerStage}`);
-        console.log(`📋 All upper stages: [${upperStages.join(', ')}]`);
-        console.log(`📋 All lower stages: [${lowerStages.join(', ')}]`);
-
-        const nextMatches = [];
-
-        // Processar Upper Bracket
-        if (currentUpperStage) {
-            console.log(`🔄 Processing Upper Bracket - Stage: ${currentUpperStage}`);
+        // Process Upper Bracket if still has matches
+        if (currentUpperStage && !upperChampion) {
             const currentUpperMatches = upperBracketMatches.filter(m => m.stage === currentUpperStage);
             const upperWinners = currentUpperMatches.map(m => m.winner_team_id).filter(Boolean);
-            const upperLosers = currentUpperMatches.map(m =>
-                m.winner_team_id === m.teamA_id ? m.teamB_id : m.teamA_id
-            ).filter(Boolean);
 
-            console.log(`🏆 Upper winners: [${upperWinners.join(', ')}], losers: [${upperLosers.join(', ')}]`);
-
-            // Gerar próxima fase do upper bracket
             if (upperWinners.length > 1) {
                 const nextUpperStage = getNextUpperStage(currentUpperStage);
-
                 for (let i = 0; i < upperWinners.length; i += 2) {
                     if (i + 1 < upperWinners.length) {
                         nextMatches.push({
@@ -308,147 +265,22 @@ const handleDoubleEliminationNextPhase = async (championshipId) => {
                         });
                     }
                 }
-            } else if (upperWinners.length === 1) {
-                console.log('🏆 Upper bracket champion defined, waiting for lower bracket');
-            }
-
-            // Processar lower bracket baseado na situação atual
-            if (currentLowerStage) {
-                console.log(`🔄 Processing Lower Bracket - Stage: ${currentLowerStage}`);
-                const currentLowerMatches = lowerBracketMatches.filter(m => m.stage === currentLowerStage);
-                console.log(`🔍 Current lower matches:`, currentLowerMatches.map(m => ({
-                    match_id: m.match_id,
-                    teamA: m.teamA_id,
-                    teamB: m.teamB_id,
-                    winner: m.winner_team_id
-                })));
-
-                const lowerWinners = currentLowerMatches.map(m => m.winner_team_id).filter(Boolean);
-                console.log(`🏆 Lower winners: [${lowerWinners.join(', ')}]`);
-
-                // Se há perdedores do upper nesta rodada, intercalar com vencedores do lower
-                if (upperLosers.length > 0) {
-                    const nextLowerStage = getNextLowerStage(currentLowerStage, upperLosers.length);
-
-                    // Intercalar vencedores do lower com perdedores do upper
-                    const mixedTeams = [];
-                    for (let i = 0; i < Math.max(lowerWinners.length, upperLosers.length); i++) {
-                        if (i < lowerWinners.length) mixedTeams.push(lowerWinners[i]);
-                        if (i < upperLosers.length) mixedTeams.push(upperLosers[i]);
-                    }
-
-                    for (let i = 0; i < mixedTeams.length; i += 2) {
-                        if (i + 1 < mixedTeams.length) {
-                            nextMatches.push({
-                                championship_id: championshipId,
-                                teamA_id: mixedTeams[i],
-                                teamB_id: mixedTeams[i + 1],
-                                date: new Date(),
-                                stage: nextLowerStage,
-                                bracket: 'lower',
-                                map: getRandomMap()
-                            });
-                        }
-                    }
-                } else if (lowerWinners.length > 1) {
-                    // Apenas vencedores do lower avançam (sem perdedores do upper)
-                    const nextLowerStage = getNextLowerStage(currentLowerStage, 0);
-
-                    for (let i = 0; i < lowerWinners.length; i += 2) {
-                        if (i + 1 < lowerWinners.length) {
-                            nextMatches.push({
-                                championship_id: championshipId,
-                                teamA_id: lowerWinners[i],
-                                teamB_id: lowerWinners[i + 1],
-                                date: new Date(),
-                                stage: nextLowerStage,
-                                bracket: 'lower',
-                                map: getRandomMap()
-                            });
-                        }
-                    }
-                }
-            } else if (upperLosers.length > 0) {
-                // Primeira vez no lower bracket - apenas perdedores do upper
-                const nextLowerStage = getNextLowerStage(null, upperLosers.length);
-
-                for (let i = 0; i < upperLosers.length; i += 2) {
-                    if (i + 1 < upperLosers.length) {
-                        nextMatches.push({
-                            championship_id: championshipId,
-                            teamA_id: upperLosers[i],
-                            teamB_id: upperLosers[i + 1],
-                            date: new Date(),
-                            stage: nextLowerStage,
-                            bracket: 'lower',
-                            map: getRandomMap()
-                        });
-                    }
-                }
-            }
-        } else if (currentLowerStage) {
-            console.log(`🔄 Processing ONLY Lower Bracket - Stage: ${currentLowerStage}`);
-            // Processar apenas lower bracket quando upper está finalizado
-            const currentLowerMatches = lowerBracketMatches.filter(m => m.stage === currentLowerStage);
-            console.log(`🔍 ISOLATED Lower matches for stage ${currentLowerStage}:`, currentLowerMatches.map(m => ({
-                match_id: m.match_id,
-                teamA: m.teamA_id,
-                teamB: m.teamB_id,
-                winner: m.winner_team_id
-            })));
-
-            const lowerWinners = currentLowerMatches.map(m => m.winner_team_id).filter(Boolean);
-
-            console.log(`🎯 Lower winners from ${currentLowerStage}: [${lowerWinners.join(', ')}]`);
-            console.log(`🔍 Lower matches in ${currentLowerStage}:`, currentLowerMatches.map(m => ({
-                match_id: m.match_id,
-                teamA: m.teamA_id,
-                teamB: m.teamB_id,
-                winner: m.winner_team_id
-            })));
-
-            if (lowerWinners.length >= 2) {
-                const nextLowerStage = getNextLowerStage(currentLowerStage, 0);
-                console.log(`🔄 Creating ${Math.floor(lowerWinners.length / 2)} matches for ${nextLowerStage}`);
-                console.log(`🎯 Winners to advance: [${lowerWinners.join(', ')}]`);
-
-                for (let i = 0; i < lowerWinners.length; i += 2) {
-                    if (i + 1 < lowerWinners.length) {
-                        console.log(`🆚 Creating Match: Team ${lowerWinners[i]} vs Team ${lowerWinners[i + 1]}`);
-                        nextMatches.push({
-                            championship_id: championshipId,
-                            teamA_id: lowerWinners[i],
-                            teamB_id: lowerWinners[i + 1],
-                            date: new Date(),
-                            stage: nextLowerStage,
-                            bracket: 'lower',
-                            map: getRandomMap()
-                        });
-                    }
-                }
-            } else if (lowerWinners.length === 1) {
-                console.log('🏆 Lower bracket champion defined');
             }
         }
 
-        // Verificar se é hora da Grand Final
-        if (upperChampion && lowerChampion) {
-            nextMatches.push({
-                championship_id: championshipId,
-                teamA_id: upperChampion,
-                teamB_id: lowerChampion,
-                date: new Date(),
-                stage: 'Grand Final',
-                bracket: 'final',
-                map: getRandomMap()
-            });
-        }
+        // Process Lower Bracket
+        const lowerResult = processLowerBracket(
+            upperBracketMatches, 
+            lowerBracketMatches, 
+            currentUpperStage, 
+            currentLowerStage, 
+            upperChampion,
+            championshipId
+        );
+        
+        nextMatches.push(...lowerResult.matches);
 
         if (nextMatches.length === 0) {
-            console.log('🚫 No matches to generate. Checking tournament state...');
-            console.log(`Upper Champion: ${upperChampion}, Lower Champion: ${lowerChampion}`);
-            console.log(`Current Upper Stage: ${currentUpperStage}, Current Lower Stage: ${currentLowerStage}`);
-
             if (upperChampion && !lowerChampion) {
                 throw new Error('Upper bracket finalizado. Aguardando conclusão do lower bracket.');
             } else if (!upperChampion && lowerChampion) {
@@ -458,32 +290,19 @@ const handleDoubleEliminationNextPhase = async (championshipId) => {
             }
         }
 
-        console.log(`📝 Creating ${nextMatches.length} matches for next phase`);
-        console.log(`🔍 Next matches to create:`, nextMatches.map(m => ({
-            teamA: m.teamA_id,
-            teamB: m.teamB_id,
-            stage: m.stage,
-            bracket: m.bracket
-        })));
-
         const createdMatches = await Match.bulkCreate(nextMatches);
 
-        // Determinar o stage principal baseado no tipo de partidas geradas
+        // Determine main stage
         let mainStage;
         const hasUpper = nextMatches.some(m => m.bracket === 'upper');
         const hasLower = nextMatches.some(m => m.bracket === 'lower');
-        const hasGrandFinal = nextMatches.some(m => m.bracket === 'final');
 
-        if (hasGrandFinal) {
-            mainStage = 'Grand Final';
-        } else if (hasUpper && hasLower) {
-            // Quando há ambos, priorizar o upper
+        if (hasUpper && hasLower) {
             const upperStage = nextMatches.find(m => m.bracket === 'upper')?.stage;
             mainStage = upperStage || nextMatches[0].stage;
         } else if (hasUpper) {
             mainStage = nextMatches.find(m => m.bracket === 'upper').stage;
         } else {
-            // Apenas lower bracket
             const lowerStage = nextMatches.find(m => m.bracket === 'lower').stage;
             mainStage = `Lower Bracket - ${lowerStage}`;
         }
@@ -508,12 +327,134 @@ const handleDoubleEliminationNextPhase = async (championshipId) => {
         };
 
     } catch (error) {
-        console.error('❌ Error in handleDoubleEliminationNextPhase:', error);
+        console.error('Error in handleDoubleEliminationNextPhase:', error);
         throw error;
     }
 };
 
-// Funções auxiliares para eliminação dupla
+function processLowerBracket(upperBracketMatches, lowerBracketMatches, currentUpperStage, currentLowerStage, upperChampion, championshipId) {
+    const matches = [];
+    
+    if (!currentLowerStage) {
+        // First time in lower bracket - only upper bracket losers
+        if (currentUpperStage) {
+            const currentUpperMatches = upperBracketMatches.filter(m => m.stage === currentUpperStage);
+            const upperLosers = currentUpperMatches.map(m =>
+                m.winner_team_id === m.teamA_id ? m.teamB_id : m.teamA_id
+            ).filter(Boolean);
+
+            for (let i = 0; i < upperLosers.length; i += 2) {
+                if (i + 1 < upperLosers.length) {
+                    matches.push({
+                        championship_id: championshipId,
+                        teamA_id: upperLosers[i],
+                        teamB_id: upperLosers[i + 1],
+                        date: new Date(),
+                        stage: 'Lower Round 1',
+                        bracket: 'lower',
+                        map: getRandomMap()
+                    });
+                }
+            }
+        }
+        return { matches };
+    }
+
+    const currentLowerMatches = lowerBracketMatches.filter(m => m.stage === currentLowerStage);
+    const lowerWinners = currentLowerMatches.map(m => m.winner_team_id).filter(Boolean);
+    
+    // Get upper bracket losers if exists
+    let upperLosers = [];
+    if (currentUpperStage && !upperChampion) {
+        const currentUpperMatches = upperBracketMatches.filter(m => m.stage === currentUpperStage);
+        upperLosers = currentUpperMatches.map(m =>
+            m.winner_team_id === m.teamA_id ? m.teamB_id : m.teamA_id
+        ).filter(Boolean);
+    }
+
+    if (currentLowerStage === 'Lower Round 3' && upperChampion) {
+        // Include Upper Semifinal loser
+        const upperSemifinalMatch = upperBracketMatches.find(m => m.stage === 'Upper Semifinal');
+        if (upperSemifinalMatch) {
+            const upperSemifinalLoser = upperSemifinalMatch.winner_team_id === upperSemifinalMatch.teamA_id 
+                ? upperSemifinalMatch.teamB_id 
+                : upperSemifinalMatch.teamA_id;
+            
+            const allTeamsForLowerSemifinal = [...lowerWinners, upperSemifinalLoser];
+            
+            for (let i = 0; i < allTeamsForLowerSemifinal.length; i += 2) {
+                if (i + 1 < allTeamsForLowerSemifinal.length) {
+                    matches.push({
+                        championship_id: championshipId,
+                        teamA_id: allTeamsForLowerSemifinal[i],
+                        teamB_id: allTeamsForLowerSemifinal[i + 1],
+                        date: new Date(),
+                        stage: 'Lower Semifinal',
+                        bracket: 'lower',
+                        map: getRandomMap()
+                    });
+                }
+            }
+        }
+    } else if (lowerWinners.length === 1 && upperChampion) {
+        // If only 1 winner and upperChampion exists, include Upper Semifinal loser
+        const upperSemifinalMatch = upperBracketMatches.find(m => m.stage === 'Upper Semifinal');
+        if (upperSemifinalMatch) {
+            const upperSemifinalLoser = upperSemifinalMatch.winner_team_id === upperSemifinalMatch.teamA_id 
+                ? upperSemifinalMatch.teamB_id 
+                : upperSemifinalMatch.teamA_id;
+            
+            const nextLowerStage = getNextLowerStage(currentLowerStage, 0);
+            matches.push({
+                championship_id: championshipId,
+                teamA_id: lowerWinners[0],
+                teamB_id: upperSemifinalLoser,
+                date: new Date(),
+                stage: nextLowerStage,
+                bracket: 'lower',
+                map: getRandomMap()
+            });
+        }
+    } else if (upperLosers.length > 0) {
+        // Always mix upper losers with lower winners
+        const nextLowerStage = getNextLowerStage(currentLowerStage, upperLosers.length);
+        const allTeams = [...lowerWinners, ...upperLosers];
+        
+        for (let i = 0; i < allTeams.length; i += 2) {
+            if (i + 1 < allTeams.length) {
+                matches.push({
+                    championship_id: championshipId,
+                    teamA_id: allTeams[i],
+                    teamB_id: allTeams[i + 1],
+                    date: new Date(),
+                    stage: nextLowerStage,
+                    bracket: 'lower',
+                    map: getRandomMap()
+                });
+            }
+        }
+    } else if (lowerWinners.length >= 2) {
+        // Normal logic - only lower bracket winners
+        const nextLowerStage = getNextLowerStage(currentLowerStage, 0);
+
+        for (let i = 0; i < lowerWinners.length; i += 2) {
+            if (i + 1 < lowerWinners.length) {
+                matches.push({
+                    championship_id: championshipId,
+                    teamA_id: lowerWinners[i],
+                    teamB_id: lowerWinners[i + 1],
+                    date: new Date(),
+                    stage: nextLowerStage,
+                    bracket: 'lower',
+                    map: getRandomMap()
+                });
+            }
+        }
+    }
+
+    return { matches };
+}
+
 function getNextUpperStage(currentStage) {
     const stageMap = {
         'Upper Round 1': 'Upper Round 2',
@@ -537,13 +478,12 @@ function getNextLowerStage(currentLowerStage, teamsCount) {
 }
 
 function getUpperBracketChampion(upperMatches) {
-    // Buscar vencedor do Upper Semifinal (que existe no seu caso)
+    // Look for Upper Semifinal winner
     const upperSemifinal = upperMatches.find(m => m.stage === 'Upper Semifinal' && m.winner_team_id);
     if (upperSemifinal) {
         return upperSemifinal.winner_team_id;
     }
 
-    // Fallback para outras fases do upper bracket
     const upperStages = ['Upper Final', 'Upper Semifinal', 'Upper Round 3', 'Upper Round 2', 'Upper Round 1'];
 
     for (let i = 0; i < upperStages.length; i++) {
@@ -556,8 +496,23 @@ function getUpperBracketChampion(upperMatches) {
 }
 
 function getLowerBracketChampion(lowerMatches) {
-    const lowerFinal = lowerMatches.find(m => m.stage === 'Lower Final' && m.winner_team_id);
-    return lowerFinal ? lowerFinal.winner_team_id : null;
+    if (lowerMatches.length === 0) return null;
+    
+    const finalStages = ['Lower Final', 'Lower Semifinal', 'Lower Round 3', 'Lower Round 2', 'Lower Round 1'];
+    
+    for (const stage of finalStages) {
+        const stageMatches = lowerMatches.filter(m => m.stage === stage && m.winner_team_id);
+        
+        if (stageMatches.length === 1) {
+            return stageMatches[0].winner_team_id;
+        }
+        
+        if (stageMatches.length > 1) {
+            break;
+        }
+    }
+    
+    return null;
 }
 
 export {
