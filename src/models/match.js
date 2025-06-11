@@ -32,7 +32,7 @@ const Match = sequelize.define('Match', {
     }
   },
   date: {
-    type: DataTypes.STRING, // alterado de DATE para STRING
+    type: DataTypes.STRING,
     allowNull: true
   },
   stage: {
@@ -59,17 +59,37 @@ const Match = sequelize.define('Match', {
     type: DataTypes.STRING,
     allowNull: false,
     defaultValue: 'Pre-Agendada'
+  },
+  next_match_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'matches',
+      key: 'match_id'
+    }
   }
 }, {
   tableName: 'matches',
   timestamps: false,
 });
 
-// Função para atualizar o status com base na data e score
+// Atualização automática de status e cálculo do vencedor
 Match.beforeSave((match) => {
-  if (match.date && match.score) {
+  const hasDate = !!match.date;
+  const hasScore = !!match.score;
+
+  // Atualiza status
+  if (hasDate && hasScore) {
     match.status = 'Encerrada';
-  } else if (match.date && !match.score) {
+
+    const teamAScore = match.score?.teamA ?? 0;
+    const teamBScore = match.score?.teamB ?? 0;
+
+    if (!match.winner_team_id) {
+      match.winner_team_id = teamAScore > teamBScore ? match.teamA_id : match.teamB_id;
+    }
+
+  } else if (hasDate && !hasScore) {
     match.status = 'Agendada';
   } else {
     match.status = 'Pre-Agendada';
