@@ -3,24 +3,13 @@ import Participant from '../models/participant.js';
 import { sequelize } from '../db/db.js';
 import { validateTeamComposition } from '../services/teamValidation.js';
 
-// FUNÇÃO AUXILIAR:
-const verifyTeamManager = async (userId, teamId, transaction) => {
-  const team = await Team.findByPk(teamId, { transaction });
-
-  if (!team) throw new Error('Equipe não encontrada');
-  if (team.user_id !== userId) throw new Error('Ação permitida apenas para o gerente do campeonato');
-
-  return team;
-};
-
-// CONTROLADORES PRINCIPAIS:
 export const createTeam = async (req, res) => {
   const transaction = await sequelize.transaction();
 
   try {
     const team = await Team.create({
       name: req.body.name,
-      user_id: req.user.user_id
+      user_id: req.user.user_id // Já garantido pelo middleware de autenticação
     }, { transaction });
 
     await transaction.commit();
@@ -65,10 +54,8 @@ export const updateTeam = async (req, res) => {
   const transaction = await sequelize.transaction();
 
   try {
-    const { teamId } = req.params;
-    const team = await verifyTeamManager(req.user.user_id, teamId, transaction);
-
-    await team.update({
+    // req.team foi injetado pelo middleware de ownership
+    await req.team.update({
       name: req.body.name
     }, { transaction });
 
@@ -76,14 +63,17 @@ export const updateTeam = async (req, res) => {
     res.status(200).json({
       message: 'Equipe atualizada com sucesso',
       team: {
-        team_id: team.team_id,
-        name: team.name
+        team_id: req.team.team_id,
+        name: req.team.name,
+        user_id: req.team.user_id
       }
     });
   } catch (error) {
     await transaction.rollback();
-    const status = error.message.includes('não encontrada') ? 404 : 403;
-    res.status(status).json({ message: error.message });
+    res.status(500).json({ 
+      message: 'Erro ao atualizar equipe',
+      error: error.message 
+    });
   }
 };
 
@@ -110,20 +100,17 @@ export const deleteTeam = async (req, res) => {
   const transaction = await sequelize.transaction();
 
   try {
-    const { teamId } = req.params;
-    await verifyTeamManager(req.user.user_id, teamId, transaction);
-
-    await Team.destroy({
-      where: { team_id: teamId },
-      transaction
-    });
+    // req.team foi injetado pelo middleware de ownership
+    await req.team.destroy({ transaction });
 
     await transaction.commit();
     res.status(204).send();
   } catch (error) {
     await transaction.rollback();
-    const status = error.message.includes('não encontrada') ? 404 : 403;
-    res.status(status).json({ message: error.message });
+    res.status(500).json({ 
+      message: 'Erro ao excluir equipe',
+      error: error.message 
+    });
   }
 };
 

@@ -9,6 +9,7 @@ import {
 import { authMiddleware } from '../middlewares/authMiddleware.js';
 import { validateSchema } from '../middlewares/validateSchema.js';
 import { participantSchema } from '../schemas/participant.schema.js';
+import { checkOwnership } from '../middlewares/ownershipMiddleware.js';
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ const router = express.Router();
 router.get('/', getAllParticipants);
 router.get('/:participantId', getParticipantById);
 router.post('/', authMiddleware, validateSchema(participantSchema), createParticipant);
-router.put('/:participantId', authMiddleware, validateSchema(participantSchema), updateParticipant);
-router.delete('/:participantId', authMiddleware, deleteParticipant);
+router.put('/:participantId', authMiddleware, checkOwnership('participant'), validateSchema(participantSchema), updateParticipant);
+router.delete('/:participantId', authMiddleware, checkOwnership('participant'), deleteParticipant);
 
 export default router;
