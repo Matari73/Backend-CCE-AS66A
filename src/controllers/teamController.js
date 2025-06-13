@@ -24,6 +24,14 @@ export const createTeam = async (req, res) => {
   } catch (error) {
     await transaction.rollback();
     res.status(400).json({ message: error.message });
+
+    // Erro de duplicidade do Sequelize
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(409).json({ 
+        message: "Já existe um time com este nome" 
+      });
+    }
+    res.status(500).json({ error: "Erro interno" });
   }
 };
 
