@@ -66,33 +66,33 @@ export const validateSubscription = async (championship_id, team_id) => {
         });
       }
 
-      // Verifica se o usuário já está em OUTRO time do mesmo campeonato (se tiver user_id)
-      if (participant.user_id) {
-        const userConflict = await Participant.findOne({
-          include: [{
-            model: Team,
-            include: [{
-              model: Subscription,
-              where: { 
-                championship_id,
-                team_id: { [Op.ne]: team_id }
-              }
-            }]
-          }],
+      // Verifica se o jogador já está em OUTRO time do mesmo campeonato
+      // (Verificaçao pelo participant_id, não pelo user_id)
+      const playerConflict = await Subscription.findOne({
+        where: { 
+          championship_id 
+        },
+        include: [{
+          model: Team,
           where: { 
-            user_id: participant.user_id,
-            participant_id: { [Op.ne]: participant.participant_id }
-          }
-        });
+            team_id: { [Op.ne]: team_id } // Ignora o time atual
+          },
+          include: [{
+            model: Participant,
+            where: { 
+              participant_id: participant.participant_id // Verifica se o mesmo jogador está em outro time
+            }
+          }]
+        }]
+      });
 
-        if (userConflict) {
-          errors.push({
-            type: 'USER_CONFLICT',
-            message: `O jogador já está participando do campeonato por outro time`,
-            participant_id: participant.participant_id,
-            conflicting_team_id: userConflict.Team.team_id
-          });
-        }
+      if (playerConflict) {
+        errors.push({
+          type: 'PLAYER_CONFLICT',
+          message: `O jogador já está participando do campeonato por outro time`,
+          participant_id: participant.participant_id,
+          conflicting_team_id: playerConflict.Team.team_id
+        });
       }
     }
 
