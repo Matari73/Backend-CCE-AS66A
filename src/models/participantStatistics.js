@@ -15,6 +15,14 @@ const ParticipantStatistics = sequelize.define('ParticipantStatistics', {
       key: 'match_id'
     }
   },
+  team_id: {
+  type: DataTypes.INTEGER,
+  allowNull: false,
+  references: {
+    model: 'teams',
+    key: 'team_id'
+  }
+},
   participant_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -59,9 +67,20 @@ const ParticipantStatistics = sequelize.define('ParticipantStatistics', {
     type: DataTypes.BOOLEAN,
     allowNull: false,
   },
-  first_defuse: {
-    type: DataTypes.BOOLEAN,
+  kda: {
+  type: DataTypes.FLOAT,
+  allowNull: false,
+  defaultValue: 0.0,
+  },
+  average_combat_score: {
+    type: DataTypes.INTEGER,
     allowNull: false,
+    defaultValue: 0,
+  },
+  total_score: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
   },
 }, {
   tableName: 'participant_statistics',
