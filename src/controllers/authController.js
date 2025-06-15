@@ -56,7 +56,6 @@ export const register = async (req, res) => {
     });
 
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: 'Erro ao registrar usuário.' });
   }
 };
@@ -92,7 +91,6 @@ export const login = async (req, res) => {
     });
 
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: 'Erro ao fazer login.' });
   }
 };
@@ -114,7 +112,6 @@ export const logout = async (req, res) => {
     tokenBlacklist.push(token);
     res.status(200).json({ message: 'Logout realizado com sucesso.' });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: 'Erro ao fazer logout.' });
   }
 };

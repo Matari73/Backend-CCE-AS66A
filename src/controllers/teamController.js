@@ -52,12 +52,6 @@ export const getTeamById = async (req, res) => {
       return res.status(404).json({ message: 'Equipe não encontrada' });
     }
 
-    try {
-      await validateTeamComposition(team.team_id);
-    } catch (compositionError) {
-      console.warn('Atenção: Composição inválida -', compositionError.message);
-    }
-
     res.status(200).json(team);
   } catch (error) {
     res.status(500).json({
