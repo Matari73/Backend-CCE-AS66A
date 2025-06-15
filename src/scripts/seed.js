@@ -12,7 +12,7 @@ const seed = async () => {
     const transaction = await sequelize.transaction();
 
     try {
-        console.log('🌱 Starting database seed...');
+        console.log('🌱 Iniciando seed...');
 
         // 1. Clear existing data (in reverse dependency order)
         await Match.destroy({ where: {}, transaction });
@@ -23,7 +23,7 @@ const seed = async () => {
         await Agent.destroy({ where: {}, transaction });
         await User.destroy({ where: {}, transaction });
 
-        console.log('🧹 Cleared existing data');
+        console.log('🧹 Dados existentes limpos');
 
         // 2. Create Users
         const hashedPassword = await bcrypt.hash('123456', 12);
@@ -33,39 +33,54 @@ const seed = async () => {
                 email: 'admin@cce.com',
                 password: hashedPassword
             },
-            ...Array.from({ length: 10 }, (_, i) => ({
+            ...Array.from({ length: 6 }, (_, i) => ({
                 name: `Manager ${i + 1}`,
                 email: `manager${i + 1}@cce.com`,
                 password: hashedPassword
             }))
         ], { transaction, returning: true });
 
-        console.log('✅ Created users');
+        console.log('✅ Usuários criados');
 
         // 3. Create Agents
-        const agents = await Agent.bulkCreate([
-            { name: 'Jett' },
+        const agents = [
+            { name: 'Vyse' },
+            { name: 'Clove' },
+            { name: 'Iso' },
+            { name: 'Deadlock' },
+            { name: 'Gekko' },
+            { name: 'Harbor' },
+            { name: 'Fade' },
+            { name: 'Neon' },
+            { name: 'Chamber' },
+            { name: 'KAY/O' },
+            { name: 'Astra' },
+            { name: 'Yoru' },
+            { name: 'Skye' },
+            { name: 'Killjoy' },
             { name: 'Reyna' },
-            { name: 'Phoenix' },
-            { name: 'Raze' },
-            { name: 'Sage' },
+            { name: 'Brimstone' },
+            { name: 'Viper' },
+            { name: 'Omen' },
             { name: 'Cypher' },
             { name: 'Sova' },
-            { name: 'Omen' }
-        ], { transaction, returning: true });
+            { name: 'Sage' },
+            { name: 'Phoenix' },
+            { name: 'Raze' },
+            { name: 'Jett' },
+            { name: 'Breach' }
+        ];
 
-        console.log('✅ Created agents');
+        await Agent.bulkCreate(agents, { transaction, returning: true });
 
-        // 4. Create Teams (32 teams total)
+        console.log('✅ 25 agentes do Valorant criados');
+
+        // 4. Create Teams (16 teams total)
         const teamNames = [
             'Team Alpha', 'Team Beta', 'Team Gamma', 'Team Delta',
             'Team Echo', 'Team Foxtrot', 'Team Golf', 'Team Hotel',
             'Team India', 'Team Juliet', 'Team Kilo', 'Team Lima',
-            'Team Mike', 'Team November', 'Team Oscar', 'Team Papa',
-            'Team Quebec', 'Team Romeo', 'Team Sierra', 'Team Tango',
-            'Team Uniform', 'Team Victor', 'Team Whiskey', 'Team X-ray',
-            'Team Yankee', 'Team Zulu', 'Team Phoenix', 'Team Storm',
-            'Team Thunder', 'Team Lightning', 'Team Vortex', 'Team Nexus'
+            'Team Mike', 'Team November', 'Team Oscar', 'Team Papa'
         ];
 
         const teams = await Team.bulkCreate(
@@ -76,9 +91,9 @@ const seed = async () => {
             { transaction, returning: true }
         );
 
-        console.log('✅ Created 32 teams');
+        console.log('✅ 16 times criados');
 
-        // 5. Create Participants (exactly 5 players + 1 coach per team)
+        // 5. Create Participants (1 coach + 5 players per team, total 96 participants)
         const participantData = [];
         teams.forEach((team, teamIndex) => {
             const userIndex = 1 + (teamIndex % (users.length - 1));
@@ -110,14 +125,14 @@ const seed = async () => {
 
         await Participant.bulkCreate(participantData, { transaction });
 
-        console.log('✅ Created participants: 1 coach + 5 players per team (192 total participants)');
+        console.log('✅ 96 participantes criados (1 coach + 5 jogadores por time)');
 
-        // 6. Create Championships (8, 16 and 32 teams)
+        // 6. Create Championships (8 and 16 teams)
         const championships = await Championship.bulkCreate([
             {
                 name: 'CCE Small Championship (8 teams)',
                 description: 'Campeonato pequeno com 8 times',
-                format: 'ELIMINACAO_SIMPLES',
+                format: 'simple',
                 start_date: new Date('2024-03-01'),
                 end_date: new Date('2024-03-31'),
                 location: 'São Paulo, SP',
@@ -127,26 +142,16 @@ const seed = async () => {
             {
                 name: 'CCE Medium Championship (16 teams)',
                 description: 'Campeonato médio com 16 times',
-                format: 'ELIMINACAO_DUPLA',
+                format: 'double',
                 start_date: new Date('2024-06-01'),
                 end_date: new Date('2024-06-30'),
                 location: 'Rio de Janeiro, RJ',
                 status: 'PLANEJADO',
                 user_id: users[0].user_id
-            },
-            {
-                name: 'CCE Large Championship (32 teams)',
-                description: 'Campeonato grande com 32 times',
-                format: 'ELIMINACAO_SIMPLES',
-                start_date: new Date('2024-09-01'),
-                end_date: new Date('2024-09-30'),
-                location: 'Belo Horizonte, MG',
-                status: 'PLANEJADO',
-                user_id: users[0].user_id
             }
         ], { transaction, returning: true });
 
-        console.log('✅ Created championships');
+        console.log('✅ 2 campeonatos criados (8 e 16 times)');
 
         // 7. Create Subscriptions
         const subscriptionData = [];
@@ -162,41 +167,27 @@ const seed = async () => {
             });
         }
 
-        // Championship 2: 16 teams (teams 8-23)
-        for (let i = 8; i < 24; i++) {
+        // Championship 2: 16 teams (teams 0-15)
+        for (let i = 0; i < 16; i++) {
             subscriptionData.push({
                 championship_id: championships[1].championship_id,
                 team_id: teams[i].team_id,
                 subscription_date: new Date(),
-                switching_code: 2000 + (i - 8) + 1,
-                score: 0
-            });
-        }
-
-        // Championship 3: 32 teams (all teams)
-        for (let i = 0; i < 32; i++) {
-            subscriptionData.push({
-                championship_id: championships[2].championship_id,
-                team_id: teams[i].team_id,
-                subscription_date: new Date(),
-                switching_code: 3000 + i + 1,
+                switching_code: 2000 + i + 1,
                 score: 0
             });
         }
 
         await Subscription.bulkCreate(subscriptionData, { transaction });
 
-        console.log('✅ Created subscriptions');
-        console.log(`📊 Championship 1: ${8} teams`);
-        console.log(`📊 Championship 2: ${16} teams`);
-        console.log(`📊 Championship 3: ${32} teams`);
+        console.log('✅ 24 inscrições criadas (8 + 16 times)');
+        console.log(`📊 Campeonato 1: ${8} times`);
+        console.log(`📊 Campeonato 2: ${16} times`);
 
         await transaction.commit();
-        console.log('🎉 Database seeded successfully!');
-
     } catch (error) {
         await transaction.rollback();
-        console.error('❌ Error seeding database:', error);
+        console.error('❌ Erro no seed:', error);
         throw error;
     }
 };
@@ -204,14 +195,14 @@ const seed = async () => {
 const runSeed = async () => {
     try {
         await sequelize.authenticate();
-        console.log('📦 Database connection established');
+        console.log('📦 Conexão com o banco de dados estabelecida');
 
         await seed();
 
-        console.log('✨ Seed completed successfully');
+        console.log('✨ Seed concluído com sucesso');
         process.exit(0);
     } catch (error) {
-        console.error('💥 Seed failed:', error);
+        console.error('💥 Falha no seed:', error);
         process.exit(1);
     }
 };
