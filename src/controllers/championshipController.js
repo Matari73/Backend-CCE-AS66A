@@ -235,11 +235,11 @@ export const generateNextPhase = async (req, res) => {
     });
 
     console.log(`✅ Completed matches: ${completedMatches.length}`);
-    console.log('Winners:', completedMatches.map(m => ({
-      match_id: m.match_id,
-      winner_id: m.winner_team_id,
-      stage: m.stage
-    })));
+    console.log('🏆 Winners and match details:');
+    completedMatches.forEach(m => {
+      const loser = m.winner_team_id === m.teamA_id ? m.teamB_id : m.teamA_id;
+      console.log(`  Match ${m.match_id}: Stage=${m.stage}, Bracket=${m.bracket}, TeamA=${m.teamA_id}, TeamB=${m.teamB_id}, Winner=${m.winner_team_id}, Loser=${loser}`);
+    });
 
     const winners = completedMatches.map(m => m.winner_team_id);
 

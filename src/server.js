@@ -14,16 +14,18 @@ import { validateSchema } from '../middlewares/validateSchema.js';
 import { championshipSchema } from '../schemas/championship.schema.js';
 import { authMiddleware } from '../middlewares/authMiddleware.js';
 
-const router = express.Router();
+const app = express();
 
-router.post('/', authMiddleware, validateSchema(championshipSchema), createChampionship);
-router.get('/', getAllChampionships);
-router.get('/:id', getChampionshipById);
-router.put('/:id', authMiddleware, validateSchema(championshipSchema), updateChampionship);
-router.delete('/:id', authMiddleware, deleteChampionship);
-router.post('/:id/generate-bracket', authMiddleware, generateBracket);
-router.post('/:id/generate-next-phase', authMiddleware, generateNextPhase);
-router.get('/:id/matches', getChampionshipMatches);
-router.put('/:id/matches/bulk-update', authMiddleware, bulkUpdateMatches);
+app.use(express.json());
 
-export default router;
+app.post('/championships', authMiddleware, validateSchema(championshipSchema), createChampionship);
+app.get('/championships', getAllChampionships);
+app.get('/championships/:id', getChampionshipById);
+app.put('/championships/:id', authMiddleware, validateSchema(championshipSchema), updateChampionship);
+app.delete('/championships/:id', authMiddleware, deleteChampionship);
+app.post('/championships/:id/generate-bracket', authMiddleware, generateBracket);
+app.post('/championships/:id/generate-next-phase', authMiddleware, generateNextPhase);
+app.get('/championships/:id/matches', getChampionshipMatches);
+app.put('/championships/:id/matches/bulk-update', authMiddleware, bulkUpdateMatches);
+
+export default app;

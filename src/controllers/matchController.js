@@ -92,7 +92,6 @@ export const getMatchById = async (req, res) => {
     }
 };
 
-
 export const bulkUpdateMatches = async (req, res) => {
     try {
         const { matches } = req.body;

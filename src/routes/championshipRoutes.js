@@ -21,8 +21,8 @@ router.get('/', getAllChampionships);
 router.get('/:id', getChampionshipById);
 router.put('/:id', authMiddleware, validateSchema(championshipSchema), updateChampionship);
 router.delete('/:id', authMiddleware, deleteChampionship);
-router.post('/:id/generate-bracket', authMiddleware, generateBracket);
 router.post('/:id/generate-next-phase', authMiddleware, generateNextPhase);
+router.post('/:id/generate-bracket', authMiddleware, generateBracket);
 router.get('/:id/matches', getChampionshipMatches);
 router.put('/:id/matches/bulk-update', authMiddleware, bulkUpdateMatches);
 
