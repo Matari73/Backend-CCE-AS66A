@@ -6,6 +6,5 @@ export {
 
 export {
     generateDoubleEliminationBracket,
-    handleSingleEliminationNextPhase,
     handleDoubleEliminationNextPhase
 } from './doubleEliminationService.js';
