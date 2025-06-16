@@ -29,18 +29,23 @@ const seed = async () => {
         const hashedPassword = await bcrypt.hash('123456', 12);
         const users = await User.bulkCreate([
             {
-                name: 'Admin User',
+                name: 'Admin Principal',
                 email: 'admin@cce.com',
                 password: hashedPassword
             },
-            ...Array.from({ length: 6 }, (_, i) => ({
-                name: `Manager ${i + 1}`,
-                email: `manager${i + 1}@cce.com`,
+            {
+                name: 'Admin Secundário', 
+                email: 'admin2@cce.com',
                 password: hashedPassword
-            }))
+            },
+            {
+                name: 'Admin Terciário',
+                email: 'admin3@cce.com', 
+                password: hashedPassword
+            }
         ], { transaction, returning: true });
 
-        console.log('✅ Usuários criados');
+        console.log('✅ 3 usuários administradores criados');
 
         // 3. Create Agents
         const agents = [
@@ -76,6 +81,7 @@ const seed = async () => {
         console.log('✅ 25 agentes do Valorant criados');
 
         // 4. Create Teams (16 teams total)
+        const teamData = [];
         const teamNames = [
             'Team Alpha', 'Team Beta', 'Team Gamma', 'Team Delta',
             'Team Echo', 'Team Foxtrot', 'Team Golf', 'Team Hotel',
@@ -83,52 +89,53 @@ const seed = async () => {
             'Team Mike', 'Team November', 'Team Oscar', 'Team Papa'
         ];
 
-        const teams = await Team.bulkCreate(
-            teamNames.map((name, index) => ({
-                name,
-                user_id: users[1 + (index % (users.length - 1))].user_id // Skip admin (index 0) and cycle through managers
-            })),
-            { transaction, returning: true }
-        );
+        for (let i = 0; i < 16; i++) {
+            teamData.push({
+                name: teamNames[i],
+                user_id: users[i % 3].user_id // Distribuir entre os 3 usuários
+            });
+        }
 
+        const teams = await Team.bulkCreate(teamData, { transaction, returning: true });
         console.log('✅ 16 times criados');
 
         // 5. Create Participants (1 coach + 5 players per team, total 96 participants)
         const participantData = [];
-        teams.forEach((team, teamIndex) => {
-            const userIndex = 1 + (teamIndex % (users.length - 1));
+        for (let teamIndex = 0; teamIndex < teams.length; teamIndex++) {
+            const team = teams[teamIndex];
+            const userIndex = teamIndex % 3;
+            const userId = users[userIndex].user_id;
 
-            // 1 Coach for each team
+            // Coach
             participantData.push({
                 name: `Coach ${teamIndex + 1}`,
                 nickname: `coach_${teamIndex + 1}`,
-                birth_date: new Date(1990 + (teamIndex % 10), (teamIndex % 12), (teamIndex % 28) + 1),
-                phone: 11900000000 + teamIndex * 10 + 1,
+                birth_date: new Date(1990 + (teamIndex % 10), teamIndex % 12, (teamIndex % 28) + 1),
+                phone: `1190000000${teamIndex + 1}`,
                 team_id: team.team_id,
                 is_coach: true,
-                user_id: users[userIndex].user_id
+                user_id: userId
             });
 
-            // Exactly 5 players per team
-            for (let i = 0; i < 5; i++) {
+            // Players
+            for (let playerIndex = 1; playerIndex <= 5; playerIndex++) {
                 participantData.push({
-                    name: `Player ${teamIndex + 1}-${i + 1}`,
-                    nickname: `player_${teamIndex + 1}_${i + 1}`,
-                    birth_date: new Date(1995 + (i % 8), ((teamIndex + i) % 12), ((teamIndex + i) % 28) + 1),
-                    phone: 11900000000 + teamIndex * 10 + i + 2,
+                    name: `Player ${teamIndex + 1}-${playerIndex}`,
+                    nickname: `player_${teamIndex + 1}_${playerIndex}`,
+                    birth_date: new Date(1995 + (playerIndex - 1), teamIndex % 12, (teamIndex % 28) + 1),
+                    phone: `1190000000${teamIndex + 1}${playerIndex}`,
                     team_id: team.team_id,
                     is_coach: false,
-                    user_id: users[userIndex].user_id
+                    user_id: userId
                 });
             }
-        });
+        }
 
         await Participant.bulkCreate(participantData, { transaction });
-
         console.log('✅ 96 participantes criados (1 coach + 5 jogadores por time)');
 
         // 6. Create Championships (8 and 16 teams)
-        const championships = await Championship.bulkCreate([
+        const championshipData = [
             {
                 name: 'CCE Small Championship (8 teams)',
                 description: 'Campeonato pequeno com 8 times',
@@ -149,8 +156,9 @@ const seed = async () => {
                 status: 'PLANEJADO',
                 user_id: users[0].user_id
             }
-        ], { transaction, returning: true });
+        ];
 
+        const championships = await Championship.bulkCreate(championshipData, { transaction, returning: true });
         console.log('✅ 2 campeonatos criados (8 e 16 times)');
 
         // 7. Create Subscriptions
@@ -161,9 +169,7 @@ const seed = async () => {
             subscriptionData.push({
                 championship_id: championships[0].championship_id,
                 team_id: teams[i].team_id,
-                subscription_date: new Date(),
-                switching_code: 1000 + i + 1,
-                score: 0
+                subscription_date: new Date()
             });
         }
 
@@ -172,9 +178,7 @@ const seed = async () => {
             subscriptionData.push({
                 championship_id: championships[1].championship_id,
                 team_id: teams[i].team_id,
-                subscription_date: new Date(),
-                switching_code: 2000 + i + 1,
-                score: 0
+                subscription_date: new Date()
             });
         }
 
