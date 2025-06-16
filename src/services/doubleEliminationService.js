@@ -33,7 +33,7 @@ const generateDoubleEliminationBracket = async (championshipId) => {
             teamB_id: shuffledTeams[i + 1].team_id,
             stage: 'Upper Round 1',
             bracket: 'upper',
-            date: new Date(),
+            date: new Date().toISOString(),
             map: getRandomMap(),
         });
 
@@ -77,7 +77,7 @@ const handleDoubleEliminationNextPhase = async (championshipId) => {
                 championship_id: championshipId,
                 teamA_id: upperChampion,
                 teamB_id: lowerChampion,
-                date: new Date(),
+                date: new Date().toISOString(),
                 stage: 'Grand Final',
                 bracket: 'final',
                 map: getRandomMap()
@@ -118,7 +118,7 @@ const handleDoubleEliminationNextPhase = async (championshipId) => {
                             championship_id: championshipId,
                             teamA_id: upperWinners[i],
                             teamB_id: upperWinners[i + 1],
-                            date: new Date(),
+                            date: new Date().toISOString(),
                             stage: nextUpperStage,
                             bracket: 'upper',
                             map: getRandomMap()
@@ -210,7 +210,7 @@ function processLowerBracket(upperBracketMatches, lowerBracketMatches, currentUp
                         championship_id: championshipId,
                         teamA_id: upperLosers[i],
                         teamB_id: upperLosers[i + 1],
-                        date: new Date(),
+                        date: new Date().toISOString(),
                         stage: 'Lower Round 1',
                         bracket: 'lower',
                         map: getRandomMap()
@@ -251,7 +251,7 @@ function processLowerBracket(upperBracketMatches, lowerBracketMatches, currentUp
                             championship_id: championshipId,
                             teamA_id: allTeamsForLowerSemifinal[i],
                             teamB_id: allTeamsForLowerSemifinal[i + 1],
-                            date: new Date(),
+                            date: new Date().toISOString(),
                             stage: 'Lower Semifinal',
                             bracket: 'lower',
                             map: getRandomMap()
@@ -269,7 +269,7 @@ function processLowerBracket(upperBracketMatches, lowerBracketMatches, currentUp
                         championship_id: championshipId,
                         teamA_id: lowerWinners[i],
                         teamB_id: lowerWinners[i + 1],
-                        date: new Date(),
+                        date: new Date().toISOString(),
                         stage: nextLowerStage,
                         bracket: 'lower',
                         map: getRandomMap()
@@ -307,7 +307,7 @@ function processLowerBracket(upperBracketMatches, lowerBracketMatches, currentUp
                             championship_id: championshipId,
                             teamA_id: pairedTeams[i],
                             teamB_id: pairedTeams[i + 1],
-                            date: new Date(),
+                            date: new Date().toISOString(),
                             stage: nextLowerStage,
                             bracket: 'lower',
                             map: getRandomMap()
@@ -324,7 +324,7 @@ function processLowerBracket(upperBracketMatches, lowerBracketMatches, currentUp
                             championship_id: championshipId,
                             teamA_id: allTeams[i],
                             teamB_id: allTeams[i + 1],
-                            date: new Date(),
+                            date: new Date().toISOString(),
                             stage: nextLowerStage,
                             bracket: 'lower',
                             map: getRandomMap()
@@ -341,7 +341,7 @@ function processLowerBracket(upperBracketMatches, lowerBracketMatches, currentUp
                         championship_id: championshipId,
                         teamA_id: lowerWinners[i],
                         teamB_id: lowerWinners[i + 1],
-                        date: new Date(),
+                        date: new Date().toISOString(),
                         stage: nextLowerStage,
                         bracket: 'lower',
                         map: getRandomMap()

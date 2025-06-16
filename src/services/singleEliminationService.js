@@ -33,7 +33,7 @@ const generateSingleEliminationBracket = async (championshipId) => {
             teamA_id: shuffledTeams[i].team_id,
             teamB_id: shuffledTeams[i + 1].team_id,
             stage: stageName,
-            date: new Date(),
+            date: new Date().toISOString(),
             map: getRandomMap(),
         });
 
@@ -89,7 +89,7 @@ const handleSingleEliminationNextPhase = async (championshipId) => {
             .map(match => match.winner_team_id);
 
         if (winners.length < 2) {
-            throw new Error(`Número insuficiente de vencedores (${winners.length}) para a próxima fase`);
+            throw new Error(`Eliminação simples já foi finalizada`);
         }
 
         const nextStageIndex = stageOrder.indexOf(currentStage) + 1;
@@ -106,7 +106,7 @@ const handleSingleEliminationNextPhase = async (championshipId) => {
                     championship_id: championshipId,
                     teamA_id: winners[i],
                     teamB_id: winners[i + 1],
-                    date: new Date(),
+                    date: new Date().toISOString(),
                     stage: nextStage,
                     bracket: 'upper',
                     map: getRandomMap()
