@@ -173,17 +173,48 @@ export const getStatsByMatch = async (req, res) => {
 
 export const getTopPlayers = async (req, res) => {
   try {
+    const { championshipId } = req.params; 
+    
     const topPlayers = await ParticipantStatistics.findAll({
       attributes: [
         'participant_id',
         [sequelize.fn('AVG', sequelize.col('kda')), 'avg_kda'],
-        [sequelize.fn('SUM', sequelize.col('kills')), 'total_kills']
+        [sequelize.fn('SUM', sequelize.col('kills')), 'total_kills'],
+        [sequelize.fn('SUM', sequelize.col('assists')), 'total_assists'],
+        [sequelize.fn('SUM', sequelize.col('deaths')), 'total_deaths'],
+        [sequelize.fn('COUNT', sequelize.col('statistic_id')), 'matches_played']
       ],
-      group: ['participant_id'],
+      include: [
+        {
+          model: Match,
+          where: { championship_id: championshipId },
+          attributes: [],
+          required: true
+        },
+        {
+          model: Participant,
+          attributes: ['name', 'nickname'],
+          required: true
+        }
+      ],
+      group: ['participant_id', 'Participant.participant_id'],
       order: [[sequelize.literal('avg_kda'), 'DESC']],
       limit: 10,
     });
-    res.json(topPlayers);
+
+    // Formatação da resposta
+    const formattedPlayers = topPlayers.map(player => ({
+      participant_id: player.participant_id,
+      name: player.Participant.name,
+      nickname: player.Participant.nickname,
+      avg_kda: parseFloat(player.get('avg_kda')).toFixed(2),
+      total_kills: player.get('total_kills'),
+      total_assists: player.get('total_assists'),
+      total_deaths: player.get('total_deaths'),
+      matches_played: player.get('matches_played')
+    }));
+
+    res.json(formattedPlayers);
   } catch (err) {
     res.status(500).json({ 
       error: 'Failed to fetch top players',

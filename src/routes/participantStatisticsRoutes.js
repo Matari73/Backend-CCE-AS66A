@@ -23,7 +23,7 @@ router.put('/:statisticId', authMiddleware, validateSchema(participantStatistics
 router.delete('/:statisticId', authMiddleware, deleteParticipantStats);
 router.get('/player/:playerId', getStatsByPlayer);
 router.get('/match/:matchId', getStatsByMatch);
-router.get('/top-players', getTopPlayers);
+router.get('/top-players/:championshipId', getTopPlayers);
 router.get('/team/:teamId/stats', getStatsByTeam);
 
 export default router;
