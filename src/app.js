@@ -9,16 +9,18 @@ routes(app);
 
 const startApp = async () => {
   try {
+    console.log('🚀 Starting application...');
+
     await connectInDatabase();
-    //await sequelize.sync({ force: true }); // Sincronização das tabelas
-    await sequelize.sync(); // Sincroniza sem apagar dados existentes
+    console.log('📦 Database connected');
 
-    console.log('Banco de dados sincronizado. Rodando seed...');
-    //await seed(); // só roda o seed depois que as tabelas foram criadas
+    await sequelize.sync({ force: true }); // Sincronização das tabelas
+    console.log('🔄 Database synchronized');
 
-    console.log('Seed finalizado. Aplicação pronta.');
   } catch (err) {
-    console.error('Erro ao iniciar a aplicação:', err);
+    console.error('❌ Erro ao iniciar a aplicação:', err);
+    console.error('Stack trace:', err.stack);
+    process.exit(1); // Exit process on critical error
   }
 };
 

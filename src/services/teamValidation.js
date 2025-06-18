@@ -16,14 +16,13 @@ export const validateTeamComposition = async (teamId) => {
       where: { team_id: teamId }
     });
 
-    // Corrigindo o campo para minúsculas (is_coach)
     const coaches = teamMembers.filter(m => m.is_coach);
     const players = teamMembers.filter(m => !m.is_coach);
 
     if (coaches.length !== 1) {
       return {
         valid: false,
-        status: 422, // Mudando para 422 (Unprocessable Entity)
+        status: 422, 
         message: 'A equipe deve ter exatamente 1 técnico'
       };
     }

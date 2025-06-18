@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon server.js"
@@ -22,7 +22,7 @@
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "dotenv": "^16.5.0",
-    "express": "^5.1.0",
+    "express": "^4.18.4",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.15.6",
     "pg-hstore": "^2.3.4",

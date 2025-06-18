@@ -6,7 +6,9 @@ import {
   updateChampionship,
   deleteChampionship,
   generateBracket,
-  generateBracketNextPhase
+  generateNextPhase,
+  getChampionshipMatches,
+  bulkUpdateMatches
 } from '../controllers/championshipController.js';
 import { validateSchema } from '../middlewares/validateSchema.js';
 import { championshipSchema } from '../schemas/championship.schema.js';
@@ -18,9 +20,11 @@ const router = express.Router();
 router.post('/', authMiddleware, validateSchema(championshipSchema), createChampionship);
 router.get('/', getAllChampionships);
 router.get('/:id', getChampionshipById);
-router.put('/:id', authMiddleware, checkOwnership('championship'), validateSchema(championshipSchema), updateChampionship);
-router.delete('/:id', authMiddleware , checkOwnership('championship'), deleteChampionship);
-router.post('/:id/generate-bracket', authMiddleware, generateBracket)
-router.post('/:id/generate-next-phase', authMiddleware, generateBracketNextPhase)
+router.put('/:id', authMiddleware, validateSchema(championshipSchema), updateChampionship);
+router.delete('/:id', authMiddleware, deleteChampionship);
+router.post('/:id/generate-next-phase', authMiddleware, generateNextPhase);
+router.post('/:id/generate-bracket', authMiddleware, generateBracket);
+router.get('/:id/matches', getChampionshipMatches);
+router.put('/:id/matches/bulk-update', authMiddleware, bulkUpdateMatches);
 
 export default router;
