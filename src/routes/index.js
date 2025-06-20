@@ -21,7 +21,7 @@ const configureRoutes = (app) => {
     app.get('/', (req, res) => {
         res.status(200).send('Certificadora de Competência Específica');
     });
-    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+    app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
     app.use('/auth', authRoutes);
     app.use('/users', userRoutes);
     app.use('/championships', championshipRoutes);

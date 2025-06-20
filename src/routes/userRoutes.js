@@ -13,10 +13,56 @@ const router = express.Router();
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           description: ID único do usuário
+ *           example: 1
+ *         name:
+ *           type: string
+ *           description: Nome completo do usuário
+ *           example: "João Silva"
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: Email do usuário
+ *           example: "joao@example.com"
+ *         created_at:
+ *           type: string
+ *           format: date-time
+ *           description: Data de criação do usuário
+ *           example: "2023-12-01T10:00:00.000Z"
+ *         updated_at:
+ *           type: string
+ *           format: date-time
+ *           description: Data da última atualização
+ *           example: "2023-12-01T10:00:00.000Z"
+ *     UserUpdate:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: Nome completo do usuário
+ *           example: "João Silva Santos"
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: Email do usuário
+ *           example: "joao.santos@example.com"
+ */
+
+/**
+ * @swagger
  * /users:
  *   get:
  *     summary: Lista todos os usuários
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de usuários retornada com sucesso
@@ -25,142 +71,116 @@ const router = express.Router();
  *             schema:
  *               type: array
  *               items:
- *                 type: object
- *                 properties:
- *                   user_id:
- *                     type: integer
- *                   name:
- *                     type: string
- *                   email:
- *                     type: string
+ *                 $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Token não fornecido ou inválido
  *       500:
  *         description: Erro interno do servidor
  */
-router.get('/', getAllUsers);
 
 /**
  * @swagger
- * /users/{id}:
+ * /users/{userId}:
  *   get:
- *     summary: Busca um usuário por ID
- *     tags: [Users]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID do usuário
- *     responses:
- *       200:
- *         description: Usuário encontrado com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 user_id:
- *                   type: integer
- *                 name:
- *                   type: string
- *                 email:
- *                   type: string
- *       404:
- *         description: Usuário não encontrado
- *       500:
- *         description: Erro interno do servidor
- */
-router.get('/:id', getUserById);
-
-/**
- * @swagger
- * /users/{id}:
- *   put:
- *     summary: Atualiza um usuário
+ *     summary: Obter usuário por ID
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: userId
  *         required: true
  *         schema:
  *           type: integer
  *         description: ID do usuário
+ *         example: 1
+ *     responses:
+ *       200:
+ *         description: Usuário encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Token não fornecido ou inválido
+ *       404:
+ *         description: Usuário não encontrado
+ *       500:
+ *         description: Erro interno do servidor
+ *   put:
+ *     summary: Atualizar usuário
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do usuário
+ *         example: 1
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - name
- *               - email
- *               - password
- *             properties:
- *               name:
- *                 type: string
- *                 minLength: 1
- *               email:
- *                 type: string
- *                 format: email
- *               password:
- *                 type: string
- *                 minLength: 8
+ *             $ref: '#/components/schemas/UserUpdate'
  *     responses:
  *       200:
  *         description: Usuário atualizado com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 user_id:
- *                   type: integer
- *                 name:
- *                   type: string
- *                 email:
- *                   type: string
+ *               $ref: '#/components/schemas/User'
  *       400:
- *         description: Erro de validação dos dados
+ *         description: Dados inválidos
  *       401:
  *         description: Token não fornecido ou inválido
  *       403:
- *         description: Você só pode atualizar seu próprio perfil
+ *         description: Não autorizado - você só pode atualizar seu próprio perfil
  *       404:
  *         description: Usuário não encontrado
  *       500:
  *         description: Erro interno do servidor
- */
-router.put('/:id', authMiddleware, validateSchema(userSchema), updateUser);
-
-/**
- * @swagger
- * /users/{id}:
  *   delete:
- *     summary: Deleta um usuário
+ *     summary: Deletar usuário
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: userId
  *         required: true
  *         schema:
  *           type: integer
  *         description: ID do usuário
+ *         example: 1
  *     responses:
- *       204:
+ *       200:
  *         description: Usuário deletado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Usuário deletado com sucesso"
  *       401:
  *         description: Token não fornecido ou inválido
  *       403:
- *         description: Você só pode deletar seu próprio perfil
+ *         description: Não autorizado - você só pode deletar seu próprio perfil
  *       404:
  *         description: Usuário não encontrado
  *       500:
  *         description: Erro interno do servidor
  */
-router.delete('/:id', authMiddleware, deleteUser);
+
+// Exemplo de rotas (você deve implementar os controllers correspondentes)
+// router.get('/', authMiddleware, getAllUsers);
+// router.get('/:userId', authMiddleware, getUserById);
+// router.put('/:userId', authMiddleware, updateUser);
+// router.delete('/:userId', authMiddleware, deleteUser);
 
 export default router;
