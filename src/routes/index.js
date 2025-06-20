@@ -1,4 +1,6 @@
 import express from 'express';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './swagger.js';
 
 import authRoutes from './authRoutes.js';
 import userRoutes from './userRoutes.js';
@@ -19,7 +21,7 @@ const configureRoutes = (app) => {
     app.get('/', (req, res) => {
         res.status(200).send('Certificadora de Competência Específica');
     });
-
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
     app.use('/auth', authRoutes);
     app.use('/users', userRoutes);
     app.use('/championships', championshipRoutes);
