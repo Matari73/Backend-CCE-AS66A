@@ -9,10 +9,21 @@ import Match from '../models/match.js';
 import bcrypt from 'bcryptjs';
 
 const seed = async () => {
+    // Aguardar um pouco mais para garantir que o banco está totalmente inicializado
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
     const transaction = await sequelize.transaction();
 
     try {
         console.log('🌱 Iniciando seed...');
+
+        // Verificar se já existem dados para evitar duplicação
+        const existingUsers = await User.count({ transaction });
+        if (existingUsers > 0) {
+            console.log('📋 Dados já existem no banco, pulando seed...');
+            await transaction.rollback();
+            return;
+        }
 
         // 1. Clear existing data (in reverse dependency order)
         await Match.destroy({ where: {}, transaction });
@@ -144,6 +155,7 @@ const seed = async () => {
                 end_date: new Date('2024-03-31'),
                 location: 'São Paulo, SP',
                 status: 'ATIVO',
+                prize: 10000,
                 user_id: users[0].user_id
             },
             {
@@ -154,6 +166,7 @@ const seed = async () => {
                 end_date: new Date('2024-06-30'),
                 location: 'Rio de Janeiro, RJ',
                 status: 'PLANEJADO',
+                prize: 50000,
                 user_id: users[0].user_id
             }
         ];
