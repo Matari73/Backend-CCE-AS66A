@@ -10,7 +10,6 @@ import {
 
 export const checkOwnership = (entityType) => async (req, res, next) => {
   try {
-    // Verificação mais robusta do usuário autenticado
     if (!req.user?.user_id) {
       return res.status(401).json({ 
         error: 'Acesso não autorizado',
@@ -50,7 +49,6 @@ export const checkOwnership = (entityType) => async (req, res, next) => {
             required: false
           }]
         });
-        // Prioriza o dono do time, caso contrário usa user_id direto
         ownerId = entity?.Team?.user_id || entity?.User?.user_id;
         break;
 
@@ -91,7 +89,6 @@ export const checkOwnership = (entityType) => async (req, res, next) => {
             required: false
           }]
         });
-        // Prioriza o dono do campeonato, caso contrário usa dono do time
         ownerId = entity?.Championship?.user_id || entity?.Team?.user_id;
         break;
 
@@ -121,10 +118,8 @@ export const checkOwnership = (entityType) => async (req, res, next) => {
     console.error(`Erro no middleware de autorização:`, error);
     res.status(500).json({ 
       error: 'Erro interno no servidor',
-      ...(process.env.NODE_ENV === 'development' && { 
-        details: error.message,
-        stack: error.stack 
-      })
+      details: error.message,
+      stack: error.stack 
     });
   }
 };

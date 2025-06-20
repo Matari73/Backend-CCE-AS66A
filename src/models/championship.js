@@ -43,8 +43,8 @@ const Championship = sequelize.define('Championship', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'users', // nome da tabela no banco (não o nome do model)
-      key: 'user_id'  // campo da chave primária na tabela users
+      model: 'users',
+      key: 'user_id'
     }
   },
 }, {

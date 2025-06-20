@@ -21,7 +21,6 @@ export const authMiddleware = async (req, res, next) => {
       });
     }
 
-    // Verificação assíncrona melhorada
     const decoded = await new Promise((resolve, reject) => {
       jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) reject(err);
@@ -29,7 +28,6 @@ export const authMiddleware = async (req, res, next) => {
       });
     });
 
-    // Verificação adicional do payload
     if (!decoded?.user_id) {
       return res.status(403).json({ 
         error: 'Token inválido',

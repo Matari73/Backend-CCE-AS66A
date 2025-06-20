@@ -4,7 +4,6 @@ import User from '../models/user.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-// Lista negra de tokens (para logout)
 export let tokenBlacklist = [];
 
 const generateToken = (user) => {
@@ -20,29 +19,24 @@ const generateToken = (user) => {
 export const register = async (req, res) => {
   const { name, email, password } = req.body;
 
-  // Validações básicas
   if (!name || !email || !password) {
     return res.status(400).json({ message: 'Nome, email e senha são obrigatórios.' });
   }
 
   try {
-    // Verifica se o usuário já existe
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ message: 'Email já está em uso.' });
     }
 
-    // Hash da senha
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Cria novo usuário
     const user = await User.create({
       name,
       email,
       password: hashedPassword
     });
 
-    // Gera token
     const token = generateToken(user);
 
     res.status(201).json({ 
@@ -102,7 +96,6 @@ export const logout = async (req, res) => {
   }
 
   try {
-    // Verifica se o token é válido antes de adicionar à lista negra
     jwt.verify(token, process.env.JWT_SECRET, (err) => {
       if (err) {
         return res.status(401).json({ message: 'Token inválido.' });

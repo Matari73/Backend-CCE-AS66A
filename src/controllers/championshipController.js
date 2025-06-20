@@ -237,7 +237,7 @@ export const bulkUpdateMatches = async (req, res) => {
     const results = [];
 
     for (const matchData of matches) {
-      const { match_id, score, map } = matchData;
+      const { match_id, score, map, date } = matchData;
 
       const match = await Match.findOne({
         where: {
@@ -251,28 +251,53 @@ export const bulkUpdateMatches = async (req, res) => {
         continue;
       }
 
-      if (!score || typeof score !== 'object' || !score.teamA || !score.teamB) {
-        results.push({ match_id, success: false, error: 'Invalid score format' });
-        continue;
+      const updateData = {};
+
+      // Atualiza score se enviado
+      if (score) {
+        if (
+          typeof score !== 'object' ||
+          typeof score.teamA !== 'number' ||
+          typeof score.teamB !== 'number'
+        ) {
+          results.push({ match_id, success: false, error: 'Invalid score format' });
+          continue;
+        }
+
+        updateData.score = score;
+
+        if (score.teamA > score.teamB) {
+          updateData.winner_team_id = match.teamA_id;
+        } else if (score.teamB > score.teamA) {
+          updateData.winner_team_id = match.teamB_id;
+        } else {
+          updateData.winner_team_id = null; // empate ou não definido
+        }
       }
 
-      let winner_team_id = null;
-      if (score.teamA > score.teamB) {
-        winner_team_id = match.teamA_id;
-      } else if (score.teamB > score.teamA) {
-        winner_team_id = match.teamB_id;
-      }
-
-      const updateData = { winner_team_id, score };
+      // Atualiza mapa se enviado
       if (map) updateData.map = map;
+
+      // Atualiza data se enviada e válida
+      if (date) {
+        const parsedDate = new Date(date);
+        if (isNaN(parsedDate.getTime())) {
+          results.push({ match_id, success: false, error: 'Invalid date format' });
+          continue;
+        }
+        updateData.date = parsedDate;
+      }
 
       await match.update(updateData);
       results.push({
         match_id,
         success: true,
         message: 'Updated successfully',
-        winner_team_id,
-        score_details: `TeamA: ${score.teamA} x ${score.teamB} :TeamB`
+        ...(score && {
+          winner_team_id: updateData.winner_team_id,
+          score_details: `TeamA: ${score.teamA} x ${score.teamB} :TeamB`
+        }),
+        ...(date && { new_date: updateData.date.toISOString() })
       });
     }
 
@@ -285,7 +310,8 @@ export const bulkUpdateMatches = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: 'Failed to bulk update matches'
+      error: 'Failed to bulk update matches',
+      details: error.message
     });
   }
 };

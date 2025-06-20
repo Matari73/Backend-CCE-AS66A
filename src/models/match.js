@@ -32,7 +32,7 @@ const Match = sequelize.define('Match', {
     }
   },
   date: {
-    type: DataTypes.STRING,
+    type: DataTypes.DATE,
     allowNull: true
   },
   stage: {

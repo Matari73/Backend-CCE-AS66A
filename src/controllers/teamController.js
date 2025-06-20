@@ -9,7 +9,7 @@ export const createTeam = async (req, res) => {
   try {
     const team = await Team.create({
       name: req.body.name,
-      user_id: req.user.user_id // Já garantido pelo middleware de autenticação
+      user_id: req.user.user_id
     }, { transaction });
 
     await transaction.commit();

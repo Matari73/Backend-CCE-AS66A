@@ -1,13 +1,11 @@
 import User from '../models/user.js';
 
-// Helper para filtrar dados sensíveis
 const filterUserData = (user) => {
   if (!user) return null;
   const { password, ...safeData } = user.dataValues;
   return safeData;
 };
 
-// Retorna todos os usuários (público)
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.findAll();
@@ -18,7 +16,6 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
-// Retorna um usuário específico (público)
 export const getUserById = async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id);
@@ -31,11 +28,9 @@ export const getUserById = async (req, res) => {
   }
 };
 
-// Atualiza usuário (apenas o próprio usuário)
 export const updateUser = async (req, res) => {
   const { id } = req.params;
   
-  // Verifica se o usuário está tentando atualizar ele mesmo
   if (req.user.user_id !== parseInt(id)) {
     return res.status(403).json({ message: 'Você só pode atualizar seu próprio perfil' });
   }
@@ -58,11 +53,9 @@ export const updateUser = async (req, res) => {
   }
 };
 
-// Deletar usuário (apenas o próprio usuário)
 export const deleteUser = async (req, res) => {
   const { id } = req.params;
 
-  // Verifica se o usuário está tentando deletar ele mesmo
   if (req.user.user_id !== parseInt(id)) {
     return res.status(403).json({ message: 'Você só pode deletar seu próprio perfil' });
   }
