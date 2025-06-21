@@ -163,6 +163,7 @@ const router = express.Router();
  *           type: string
  *           description: Mapa jogado
  *           example: "Haven"
+ */  
 
 /**
  * @swagger

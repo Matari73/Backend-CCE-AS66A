@@ -52,7 +52,7 @@ const router = express.Router();
  *           example: "2024-02-15"
  *         status:
  *           type: string
- *           enum: [agendado, em andamento, encerrado]
+ *           enum: [planejado, ativo, finalizado]
  *           description: Status atual do campeonato
  *           example: "agendado"
  *         prize:
@@ -97,7 +97,7 @@ const router = express.Router();
  *           example: "2024-02-15"
  *         status:
  *           type: string
- *           enum: [agendado, em andamento, encerrado]
+ *           enum: [Planejado, ativo, finalizado]
  *           description: Status atual do campeonato
  *           example: "agendado"
  *         prize:
