@@ -334,13 +334,13 @@ const router = express.Router();
  *         description: Erro interno do servidor
  */
 
+router.get('/overview/:id', getChampionshipOverview);
+router.get('/overview/:id/teams', getTeamStatistics);
+router.get('/overview/:id/players', getAllPlayerStatsInChampionship);
 router.get('/player/:playerId', getStatsByPlayerId);
 router.post('/', authMiddleware, validateSchema(championshipStatisticsSchema), createChampionshipStats);
 router.get('/', getAllChampionshipStats);
 router.get('/:statisticId', getChampionshipStatsById);
-router.get('/overview/:id', getChampionshipOverview);
-router.get('/overview/:id/teams', getTeamStatistics);
-router.get('/overview/:id/players', getAllPlayerStatsInChampionship);
 router.put('/:statisticId', authMiddleware, checkOwnership('championshipstatistics'), validateSchema(championshipStatisticsSchema), updateChampionshipStats);
 router.delete('/:statisticId', authMiddleware, checkOwnership('championshipstatistics'), deleteChampionshipStats);
 

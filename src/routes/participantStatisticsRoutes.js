@@ -19,6 +19,126 @@ const router = express.Router();
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     ParticipantStatistic:
+ *       type: object
+ *       required:
+ *         - participant_id
+ *         - match_id
+ *         - agent_id
+ *         - kills
+ *         - assists
+ *         - deaths
+ *       properties:
+ *         statistic_id:
+ *           type: integer
+ *           description: ID único da estatística
+ *           example: 1
+ *         participant_id:
+ *           type: integer
+ *           description: ID do participante
+ *           example: 1
+ *         match_id:
+ *           type: integer
+ *           description: ID da partida
+ *           example: 1
+ *         agent_id:
+ *           type: integer
+ *           description: ID do agente usado
+ *           example: 1
+ *         kills:
+ *           type: integer
+ *           description: Número de kills
+ *           example: 15
+ *         assists:
+ *           type: integer
+ *           description: Número de assists
+ *           example: 8
+ *         deaths:
+ *           type: integer
+ *           description: Número de deaths
+ *           example: 12
+ *         spike_plants:
+ *           type: integer
+ *           description: Número de spike plants
+ *           example: 3
+ *         spike_defuses:
+ *           type: integer
+ *           description: Número de spike defuses
+ *           example: 2
+ *         MVPs:
+ *           type: integer
+ *           description: Número de MVPs
+ *           example: 5
+ *         first_kills:
+ *           type: integer
+ *           description: Número de first kills
+ *           example: 4
+ *         created_at:
+ *           type: string
+ *           format: date-time
+ *           description: Data de criação
+ *           example: "2023-12-01T10:00:00.000Z"
+ *         updated_at:
+ *           type: string
+ *           format: date-time
+ *           description: Data da última atualização
+ *           example: "2023-12-01T10:00:00.000Z"
+ *     ParticipantStatisticInput:
+ *       type: object
+ *       required:
+ *         - participant_id
+ *         - match_id
+ *         - agent_id
+ *         - kills
+ *         - assists
+ *         - deaths
+ *       properties:
+ *         participant_id:
+ *           type: integer
+ *           description: ID do participante
+ *           example: 1
+ *         match_id:
+ *           type: integer
+ *           description: ID da partida
+ *           example: 1
+ *         agent_id:
+ *           type: integer
+ *           description: ID do agente usado
+ *           example: 1
+ *         kills:
+ *           type: integer
+ *           description: Número de kills
+ *           example: 15
+ *         assists:
+ *           type: integer
+ *           description: Número de assists
+ *           example: 8
+ *         deaths:
+ *           type: integer
+ *           description: Número de deaths
+ *           example: 12
+ *         spike_plants:
+ *           type: integer
+ *           description: Número de spike plants
+ *           example: 3
+ *         spike_defuses:
+ *           type: integer
+ *           description: Número de spike defuses
+ *           example: 2
+ *         MVPs:
+ *           type: integer
+ *           description: Número de MVPs
+ *           example: 5
+ *         first_kills:
+ *           type: integer
+ *           description: Número de first kills
+ *           example: 4
+ */
+
+/**
+ * @swagger
  * tags:
  *   name: ParticipantStatistics
  *   description: Endpoints for managing participant statistics
@@ -28,49 +148,24 @@ const router = express.Router();
  * @swagger
  * /participant-statistics:
  *   get:
- *     summary: Retrieve all participant statistics
+ *     summary: Lista todas as estatísticas dos participantes
  *     tags: [ParticipantStatistics]
  *     responses:
  *       200:
- *         description: A list of participant statistics
+ *         description: Lista de estatísticas retornada com sucesso
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/ParticipantStatistic'
- */
-
-/**
- * @swagger
- * /participant-statistics/{statisticId}:
- *   get:
- *     summary: Retrieve participant statistics by ID
- *     tags: [ParticipantStatistics]
- *     parameters:
- *       - name: statisticId
- *         in: path
- *         required: true
- *         description: The ID of the participant statistic
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Participant statistic details
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ParticipantStatistic'
- *       404:
- *         description: Statistic not found
- */
-
-/**
- * @swagger
- * /participant-statistics:
+ *       500:
+ *         description: Erro interno do servidor
  *   post:
- *     summary: Create participant statistics
+ *     summary: Criar nova estatística de participante
  *     tags: [ParticipantStatistics]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -79,24 +174,57 @@ const router = express.Router();
  *             $ref: '#/components/schemas/ParticipantStatisticInput'
  *     responses:
  *       201:
- *         description: Participant statistic created successfully
+ *         description: Estatística criada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ParticipantStatistic'
  *       400:
- *         description: Invalid input
+ *         description: Dados inválidos
+ *       401:
+ *         description: Token não fornecido ou inválido
+ *       500:
+ *         description: Erro interno do servidor
  */
 
 /**
  * @swagger
  * /participant-statistics/{statisticId}:
- *   put:
- *     summary: Update participant statistics
+ *   get:
+ *     summary: Obter estatística do participante por ID
  *     tags: [ParticipantStatistics]
  *     parameters:
  *       - name: statisticId
  *         in: path
  *         required: true
- *         description: The ID of the participant statistic
+ *         description: ID da estatística do participante
  *         schema:
- *           type: string
+ *           type: integer
+ *         example: 1
+ *     responses:
+ *       200:
+ *         description: Estatística encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ParticipantStatistic'
+ *       404:
+ *         description: Estatística não encontrada
+ *       500:
+ *         description: Erro interno do servidor
+ *   put:
+ *     summary: Atualizar estatística do participante
+ *     tags: [ParticipantStatistics]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: statisticId
+ *         in: path
+ *         required: true
+ *         description: ID da estatística do participante
+ *         schema:
+ *           type: integer
+ *         example: 1
  *     requestBody:
  *       required: true
  *       content:
@@ -105,273 +233,167 @@ const router = express.Router();
  *             $ref: '#/components/schemas/ParticipantStatisticInput'
  *     responses:
  *       200:
- *         description: Participant statistic updated successfully
+ *         description: Estatística atualizada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ParticipantStatistic'
+ *       400:
+ *         description: Dados inválidos
+ *       401:
+ *         description: Token não fornecido ou inválido
  *       404:
- *         description: Statistic not found
- */
-
-/**
- * @swagger
- * /participant-statistics/{statisticId}:
+ *         description: Estatística não encontrada
+ *       500:
+ *         description: Erro interno do servidor
  *   delete:
- *     summary: Delete participant statistics
+ *     summary: Deletar estatística do participante
  *     tags: [ParticipantStatistics]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: statisticId
  *         in: path
  *         required: true
- *         description: The ID of the participant statistic
+ *         description: ID da estatística do participante
  *         schema:
- *           type: string
+ *           type: integer
+ *         example: 1
  *     responses:
  *       204:
- *         description: Participant statistic deleted successfully
+ *         description: Estatística deletada com sucesso
+ *       401:
+ *         description: Token não fornecido ou inválido
  *       404:
- *         description: Statistic not found
+ *         description: Estatística não encontrada
+ *       500:
+ *         description: Erro interno do servidor
  */
 
 /**
  * @swagger
  * /participant-statistics/player/{playerId}:
  *   get:
- *     summary: Retrieve statistics by player ID
+ *     summary: Obter estatísticas por ID do jogador
  *     tags: [ParticipantStatistics]
  *     parameters:
  *       - name: playerId
  *         in: path
  *         required: true
- *         description: The ID of the player
+ *         description: ID do jogador
  *         schema:
- *           type: string
+ *           type: integer
+ *         example: 1
  *     responses:
  *       200:
- *         description: Player statistics
+ *         description: Estatísticas do jogador
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/ParticipantStatistic'
+ *       404:
+ *         description: Jogador não encontrado
+ *       500:
+ *         description: Erro interno do servidor
  */
 
 /**
  * @swagger
  * /participant-statistics/match/{matchId}:
  *   get:
- *     summary: Retrieve statistics by match ID
+ *     summary: Obter estatísticas por ID da partida
  *     tags: [ParticipantStatistics]
  *     parameters:
  *       - name: matchId
  *         in: path
  *         required: true
- *         description: The ID of the match
+ *         description: ID da partida
  *         schema:
- *           type: string
+ *           type: integer
+ *         example: 1
  *     responses:
  *       200:
- *         description: Match statistics
+ *         description: Estatísticas da partida
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/ParticipantStatistic'
+ *       404:
+ *         description: Partida não encontrada
+ *       500:
+ *         description: Erro interno do servidor
  */
 
 /**
  * @swagger
  * /participant-statistics/top-players/{championshipId}:
  *   get:
- *     summary: Retrieve top players by championship ID
+ *     summary: Obter top jogadores por ID do campeonato
  *     tags: [ParticipantStatistics]
  *     parameters:
  *       - name: championshipId
  *         in: path
  *         required: true
- *         description: The ID of the championship
+ *         description: ID do campeonato
  *         schema:
- *           type: string
+ *           type: integer
+ *         example: 1
  *     responses:
  *       200:
- *         description: Top players statistics
+ *         description: Estatísticas dos melhores jogadores
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/ParticipantStatistic'
+ *       404:
+ *         description: Campeonato não encontrado
+ *       500:
+ *         description: Erro interno do servidor
  */
 
 /**
  * @swagger
  * /participant-statistics/team/{teamId}/stats:
  *   get:
- *     summary: Retrieve statistics by team ID
+ *     summary: Obter estatísticas por ID da equipe
  *     tags: [ParticipantStatistics]
  *     parameters:
  *       - name: teamId
  *         in: path
  *         required: true
- *         description: The ID of the team
+ *         description: ID da equipe
  *         schema:
- *           type: string
+ *           type: integer
+ *         example: 1
  *     responses:
  *       200:
- *         description: Team statistics
+ *         description: Estatísticas da equipe
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/ParticipantStatistic'
- */
-
-/**
- * @swagger
- * /participant-statistics/{statisticId}:
- *   get:
- *     summary: Retrieve participant statistics by ID
- *     tags: [ParticipantStatistics]
- *     parameters:
- *       - name: statisticId
- *         in: path
- *         required: true
- *         description: The ID of the participant statistic
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Participant statistic details
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ParticipantStatistic'
  *       404:
- *         description: Statistic not found
- */
-router.get('/:statisticId', getParticipantStatsById);
-
-/**
- * @swagger
- * /participant-statistics:
- *   post:
- *     summary: Create participant statistics
- *     tags: [ParticipantStatistics]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/ParticipantStatisticInput'
- *     responses:
- *       201:
- *         description: Participant statistic created successfully
- *       400:
- *         description: Invalid input
+ *         description: Equipe não encontrada
+ *       500:
+ *         description: Erro interno do servidor
  */
 
-/**
- * @swagger
- * /participant-statistics/{statisticId}:
- *   put:
- *     summary: Update participant statistics
- *     tags: [ParticipantStatistics]
- *     parameters:
- *       - name: statisticId
- *         in: path
- *         required: true
- *         description: The ID of the participant statistic
- *         schema:
- *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/ParticipantStatisticInput'
- *     responses:
- *       200:
- *         description: Participant statistic updated successfully
- *       404:
- *         description: Statistic not found
- */
-
-/**
- * @swagger
- * /participant-statistics/{statisticId}:
- *   delete:
- *     summary: Delete participant statistics
- *     tags: [ParticipantStatistics]
- *     parameters:
- *       - name: statisticId
- *         in: path
- *         required: true
- *         description: The ID of the participant statistic
- *         schema:
- *           type: string
- *     responses:
- *       204:
- *         description: Participant statistic deleted successfully
- *       404:
- *         description: Statistic not found
- */
-
-/**
- * @swagger
- * /participant-statistics/player/{playerId}:
- *   get:
- *     summary: Retrieve statistics by player ID
- *     tags: [ParticipantStatistics]
- *     parameters:
- *       - name: playerId
- *         in: path
- *         required: true
- *         description: The ID of the player
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Player statistics
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/ParticipantStatistic'
- */
-
-/**
- * @swagger
- * /participant-statistics/match/{matchId}:
- *   get:
- *     summary: Retrieve statistics by match ID
- *     tags: [ParticipantStatistics]
- *     parameters:
- *       - name: matchId
- *         in: path
- *         required: true
- *         description: The ID of the match
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Match statistics
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/ParticipantStatistic'
- */
-
-router.get('/team/:teamId/stats', getStatsByTeam);
-router.put('/:statisticId', authMiddleware, validateSchema(participantStatisticsSchema), updateParticipantStats);
 router.get('/', getAllParticipantStats);
+router.get('/:statisticId', getParticipantStatsById);
+router.post('/', authMiddleware, validateSchema(participantStatisticsSchema), createParticipantStats);
 router.put('/:statisticId', authMiddleware, validateSchema(participantStatisticsSchema), updateParticipantStats);
 router.delete('/:statisticId', authMiddleware, deleteParticipantStats);
 router.get('/player/:playerId', getStatsByPlayer);
 router.get('/match/:matchId', getStatsByMatch);
-router.delete('/:statisticId', authMiddleware, deleteParticipantStats);
-router.post('/', authMiddleware, validateSchema(participantStatisticsSchema), createParticipantStats);
+router.get('/top-players/:championshipId', getTopPlayers);
+router.get('/team/:teamId/stats', getStatsByTeam);
 
 export default router;

@@ -240,6 +240,6 @@ router.get('/:teamId', getTeamById);
 router.post('/', authMiddleware, validateSchema(teamSchema), createTeam);
 router.put('/:teamId', authMiddleware, validateSchema(teamSchema), checkOwnership('team'), updateTeam);
 router.delete('/:teamId', authMiddleware, checkOwnership('team'), deleteTeam);
-router.get('/:teamId/validate', validateTeam)
+router.get('/:teamId/validate', validateTeam);
 
 export default router;

@@ -41,6 +41,35 @@ const router = express.Router();
  *           format: date-time
  *           description: Data da inscrição
  *           example: "2023-12-01T10:00:00.000Z"
+ *         created_at:
+ *           type: string
+ *           format: date-time
+ *           description: Data de criação
+ *           example: "2023-12-01T10:00:00.000Z"
+ *         updated_at:
+ *           type: string
+ *           format: date-time
+ *           description: Data da última atualização
+ *           example: "2023-12-01T10:00:00.000Z"
+ *     SubscriptionInput:
+ *       type: object
+ *       required:
+ *         - championship_id
+ *         - team_id
+ *       properties:
+ *         championship_id:
+ *           type: integer
+ *           description: ID do campeonato
+ *           example: 1
+ *         team_id:
+ *           type: integer
+ *           description: ID da equipe
+ *           example: 1
+ *         subscription_date:
+ *           type: string
+ *           format: date-time
+ *           description: Data da inscrição
+ *           example: "2023-12-01T10:00:00.000Z"
  */
 
 /**
