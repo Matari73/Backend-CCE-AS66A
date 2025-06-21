@@ -54,7 +54,7 @@ const router = express.Router();
  *           type: string
  *           enum: [planejado, ativo, finalizado]
  *           description: Status atual do campeonato
- *           example: "agendado"
+ *           example: "planejado"
  *         prize:
  *           type: number
  *           format: decimal
@@ -97,9 +97,9 @@ const router = express.Router();
  *           example: "2024-02-15"
  *         status:
  *           type: string
- *           enum: [Planejado, ativo, finalizado]
+ *           enum: [planejado, ativo, finalizado]
  *           description: Status atual do campeonato
- *           example: "agendado"
+ *           example: "planejado"
  *         prize:
  *           type: number
  *           format: decimal
@@ -305,6 +305,24 @@ const router = express.Router();
  *                   example: "Dados inválidos fornecidos"
  *       401:
  *         description: Token não fornecido ou inválido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Token não fornecido"
+ *       403:
+ *         description: Acesso negado - usuário não é o dono do campeonato
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Acesso negado"
  *       404:
  *         description: Campeonato não encontrado
  *         content:
@@ -317,6 +335,14 @@ const router = express.Router();
  *                   example: "Campeonato não encontrado"
  *       500:
  *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Erro interno do servidor"
  *   delete:
  *     summary: Deletar campeonato
  *     tags: [Championships]
@@ -343,6 +369,16 @@ const router = express.Router();
  *                 error:
  *                   type: string
  *                   example: "Token não fornecido"
+ *       403:
+ *         description: Acesso negado - usuário não é o dono do campeonato
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Acesso negado"
  *       404:
  *         description: Campeonato não encontrado
  *         content:
@@ -365,6 +401,14 @@ const router = express.Router();
  *                   example: "Não é possível deletar campeonato com equipes inscritas"
  *       500:
  *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Erro interno do servidor"
  */
 
 /**
@@ -838,9 +882,43 @@ const router = express.Router();
  *                   example: "Matches array is required"
  *       401:
  *         description: Token não fornecido ou inválido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Token não fornecido"
  *       404:
  *         description: Campeonato não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Campeonato não encontrado"
  *       500:
+ *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: "Erro interno do servidor"
  *         description: Erro interno do servidor
  *         content:
  *           application/json:
