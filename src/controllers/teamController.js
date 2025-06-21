@@ -62,7 +62,6 @@ export const updateTeam = async (req, res) => {
   const transaction = await sequelize.transaction();
 
   try {
-    // req.team foi injetado pelo middleware de ownership
     await req.team.update({
       name: req.body.name
     }, { transaction });
@@ -108,7 +107,6 @@ export const deleteTeam = async (req, res) => {
   const transaction = await sequelize.transaction();
 
   try {
-    // req.team foi injetado pelo middleware de ownership
     await req.team.destroy({ transaction });
 
     await transaction.commit();
