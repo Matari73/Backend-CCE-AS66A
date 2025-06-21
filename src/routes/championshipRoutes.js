@@ -861,7 +861,7 @@ const router = express.Router();
 router.get('/', getAllChampionships);
 router.get('/:id', getChampionshipById);
 router.post('/', authMiddleware, validateSchema(championshipSchema), createChampionship);
-router.put('/:id', authMiddleware, validateSchema(championshipSchema), updateChampionship);
+router.put('/:id', authMiddleware, checkOwnership('championship'), validateSchema(championshipSchema), updateChampionship);
 router.delete('/:id', authMiddleware, deleteChampionship);
 router.post('/:id/generate-bracket', authMiddleware, generateBracket);
 router.post('/:id/generate-next-phase', authMiddleware, generateNextPhase);
