@@ -13,6 +13,7 @@ import {
 import { authMiddleware } from '../middlewares/authMiddleware.js';
 import { validateSchema } from '../middlewares/validateSchema.js';
 import { participantStatisticsSchema } from '../schemas/participantStatistic.schema.js';
+import { checkOwnership } from '../middlewares/ownershipMiddleware.js';
 
 const router = express.Router();
 
