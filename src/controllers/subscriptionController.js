@@ -98,12 +98,10 @@ export const updateSubscription = async (req, res) => {
       });
     }
 
-    // Valida se houve mudança relevante
     const teamChanged = team_id && team_id !== subscription.team_id;
     const championshipChanged = championship_id && championship_id !== subscription.championship_id;
 
     if (teamChanged || championshipChanged) {
-      // Valida composição do time se o time foi alterado
       if (teamChanged) {
         const teamValidation = await validateTeamComposition(team_id);
         if (!teamValidation.valid) {
@@ -114,7 +112,6 @@ export const updateSubscription = async (req, res) => {
         }
       }
 
-      // Valida regras de inscrição
       const finalChampionshipId = championshipChanged ? championship_id : subscription.championship_id;
       const finalTeamId = teamChanged ? team_id : subscription.team_id;
 
@@ -166,7 +163,6 @@ export const deleteSubscription = async (req, res) => {
     }
 };
 
-// Endpoints especializados
 export const getSubscriptionBySwitchingCode = async (req, res) => {
     try {
         const subscription = await Subscription.findOne({ 

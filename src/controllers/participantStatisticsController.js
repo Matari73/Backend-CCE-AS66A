@@ -5,7 +5,7 @@ import { sequelize } from '../db/db.js';
 
 // Funções Auxiliares
 const calculateKDA = (kills, assists, deaths) => {
-  return (kills + assists) / Math.max(1, deaths); // Evita divisão por zero
+  return (kills + assists) / Math.max(1, deaths);
 };
 
 const calculateACS = (kills, assists, spike_plants, spike_defuses) => {
@@ -13,31 +13,27 @@ const calculateACS = (kills, assists, spike_plants, spike_defuses) => {
 };
 
 const validateStatsCreation = async (participant_id, match_id) => {
-  // Verifica se o participant é coach
   const participant = await Participant.findByPk(participant_id);
   if (participant?.is_coach) {
     throw new Error('Coaches não podem ter estatísticas de jogo.');
   }
 
-  // Verifica se a partida está "Encerrada"
   const match = await Match.findByPk(match_id);
-  if (match?.status !== 'Encerrada') {
-    throw new Error('Estatísticas só podem ser criadas após o encerramento da partida (status: "Encerrada")');
+  if (match?.status !== 'finalizado') {
+    throw new Error('Estatísticas só podem ser criadas após a finalização da partida (status: "finalizado")');
   }
 
   return {
-    team_id: participant.team_id, // Retorna team_id para uso no controller
+    team_id: participant.team_id,
     match_status: match.status,
   };
 };
 
-// CRUD Principal
 export const createParticipantStats = async (req, res) => {
   const transaction = await sequelize.transaction();
   try {
     const { participant_id, match_id, ...rest } = req.body;
 
-    // Validações combinadas (coach + status da partida)
     const { team_id } = await validateStatsCreation(participant_id, match_id);
     if (!team_id) throw new Error('Jogador não está em um time.');
 

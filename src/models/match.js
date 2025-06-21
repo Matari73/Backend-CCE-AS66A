@@ -62,7 +62,7 @@ const Match = sequelize.define('Match', {
   status: {
     type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: 'Pre-Agendada'
+    defaultValue: 'planejado'
   },
   next_match_id: {
     type: DataTypes.INTEGER,

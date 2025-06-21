@@ -9,15 +9,11 @@ import Match from '../models/match.js';
 import bcrypt from 'bcryptjs';
 
 const seed = async () => {
-    // Aguardar um pouco mais para garantir que o banco está totalmente inicializado
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
     const transaction = await sequelize.transaction();
 
     try {
         console.log('🌱 Iniciando seed...');
 
-        // Verificar se já existem dados para evitar duplicação
         const existingUsers = await User.count({ transaction });
         if (existingUsers > 0) {
             console.log('📋 Dados já existem no banco, pulando seed...');
@@ -25,7 +21,6 @@ const seed = async () => {
             return;
         }
 
-        // 1. Clear existing data (in reverse dependency order)
         await Match.destroy({ where: {}, transaction });
         await Subscription.destroy({ where: {}, transaction });
         await Championship.destroy({ where: {}, transaction });
@@ -36,7 +31,6 @@ const seed = async () => {
 
         console.log('🧹 Dados existentes limpos');
 
-        // 2. Create Users
         const hashedPassword = await bcrypt.hash('123456', 12);
         const users = await User.bulkCreate([
             {
@@ -58,7 +52,6 @@ const seed = async () => {
 
         console.log('✅ 3 usuários administradores criados');
 
-        // 3. Create Agents
         const agents = [
             { name: 'Vyse' },
             { name: 'Clove' },
@@ -91,7 +84,6 @@ const seed = async () => {
 
         console.log('✅ 25 agentes do Valorant criados');
 
-        // 4. Create Teams (16 teams total)
         const teamData = [];
         const teamNames = [
             'Team Alpha', 'Team Beta', 'Team Gamma', 'Team Delta',
@@ -103,21 +95,19 @@ const seed = async () => {
         for (let i = 0; i < 16; i++) {
             teamData.push({
                 name: teamNames[i],
-                user_id: users[i % 3].user_id // Distribuir entre os 3 usuários
+                user_id: users[i % 3].user_id
             });
         }
 
         const teams = await Team.bulkCreate(teamData, { transaction, returning: true });
         console.log('✅ 16 times criados');
 
-        // 5. Create Participants (1 coach + 5 players per team, total 96 participants)
         const participantData = [];
         for (let teamIndex = 0; teamIndex < teams.length; teamIndex++) {
             const team = teams[teamIndex];
             const userIndex = teamIndex % 3;
             const userId = users[userIndex].user_id;
 
-            // Coach
             participantData.push({
                 name: `Coach ${teamIndex + 1}`,
                 nickname: `coach_${teamIndex + 1}`,
@@ -128,7 +118,6 @@ const seed = async () => {
                 user_id: userId
             });
 
-            // Players
             for (let playerIndex = 1; playerIndex <= 5; playerIndex++) {
                 participantData.push({
                     name: `Player ${teamIndex + 1}-${playerIndex}`,
@@ -145,7 +134,6 @@ const seed = async () => {
         await Participant.bulkCreate(participantData, { transaction });
         console.log('✅ 96 participantes criados (1 coach + 5 jogadores por time)');
 
-        // 6. Create Championships (8 and 16 teams)
         const championshipData = [
             {
                 name: 'CCE Small Championship (8 teams)',
@@ -174,10 +162,8 @@ const seed = async () => {
         const championships = await Championship.bulkCreate(championshipData, { transaction, returning: true });
         console.log('✅ 2 campeonatos criados (8 e 16 times)');
 
-        // 7. Create Subscriptions
         const subscriptionData = [];
 
-        // Championship 1: 8 teams (teams 0-7)
         for (let i = 0; i < 8; i++) {
             subscriptionData.push({
                 championship_id: championships[0].championship_id,
@@ -186,7 +172,6 @@ const seed = async () => {
             });
         }
 
-        // Championship 2: 16 teams (teams 0-15)
         for (let i = 0; i < 16; i++) {
             subscriptionData.push({
                 championship_id: championships[1].championship_id,
@@ -224,7 +209,6 @@ const runSeed = async () => {
     }
 };
 
-// Run seed if called directly
 if (process.argv[1] === new URL(import.meta.url).pathname) {
     runSeed();
 }

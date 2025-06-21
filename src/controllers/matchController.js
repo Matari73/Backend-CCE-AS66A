@@ -4,7 +4,6 @@ import Championship from '../models/championship.js';
 import { handleSingleEliminationNextPhase, handleDoubleEliminationNextPhase } from '../services/championshipService.js';
 
 
-//criar partida
 export const createMatch = async (req, res) => {
   try {
     const {
