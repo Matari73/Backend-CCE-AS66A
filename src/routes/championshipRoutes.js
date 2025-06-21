@@ -882,43 +882,9 @@ const router = express.Router();
  *                   example: "Matches array is required"
  *       401:
  *         description: Token não fornecido ou inválido
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 error:
- *                   type: string
- *                   example: "Token não fornecido"
  *       404:
  *         description: Campeonato não encontrado
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 error:
- *                   type: string
- *                   example: "Campeonato não encontrado"
  *       500:
- *         description: Erro interno do servidor
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 error:
- *                   type: string
- *                   example: "Erro interno do servidor"
  *         description: Erro interno do servidor
  *         content:
  *           application/json:
