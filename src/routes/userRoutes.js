@@ -177,10 +177,9 @@ const router = express.Router();
  *         description: Erro interno do servidor
  */
 
-// Exemplo de rotas (você deve implementar os controllers correspondentes)
-// router.get('/', authMiddleware, getAllUsers);
-// router.get('/:userId', authMiddleware, getUserById);
-// router.put('/:userId', authMiddleware, updateUser);
-// router.delete('/:userId', authMiddleware, deleteUser);
+router.get('/', authMiddleware, getAllUsers);
+router.get('/:userId', authMiddleware, getUserById);
+router.put('/:userId', authMiddleware, updateUser);
+router.delete('/:userId', authMiddleware, deleteUser);
 
 export default router;

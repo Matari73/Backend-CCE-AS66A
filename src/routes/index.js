@@ -14,10 +14,8 @@ import participantStatisticsRoutes from './participantStatisticsRoutes.js';
 import championshipStatisticsRoutes from './championshipStatisticsRoutes.js';
 
 const configureRoutes = (app) => {
-    // Middlewares globais
     app.use(express.json());
 
-    // Rota de teste
     app.get('/', (req, res) => {
         res.status(200).send('Certificadora de Competência Específica');
     });
