@@ -865,7 +865,7 @@ router.delete('/:id', authMiddleware, checkOwnership('championship'), deleteCham
 router.post('/:id/generate-next-phase', authMiddleware, generateNextPhase);
 router.post('/:id/generate-bracket', authMiddleware, generateBracket);
 router.get('/:id/matches', getChampionshipMatches);
-router.put('/:id/matches/bulk-update', authMiddleware, bulkUpdateMatches);
 router.post('/', authMiddleware, validateSchema(championshipSchema), createChampionship);
+router.put('/:id/matches/bulk-update', authMiddleware, checkOwnership('match'), bulkUpdateMatches);
 
 export default router;
