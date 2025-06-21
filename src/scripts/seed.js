@@ -142,7 +142,7 @@ const seed = async () => {
                 start_date: new Date('2024-03-01'),
                 end_date: new Date('2024-03-31'),
                 location: 'São Paulo, SP',
-                status: 'ATIVO',
+                status: 'finalizado',
                 prize: 10000,
                 user_id: users[0].user_id
             },
@@ -150,10 +150,10 @@ const seed = async () => {
                 name: 'CCE Medium Championship (16 teams)',
                 description: 'Campeonato médio com 16 times',
                 format: 'double',
-                start_date: new Date('2024-06-01'),
-                end_date: new Date('2024-06-30'),
+                start_date: new Date('2026-06-01'),
+                end_date: new Date('2026-07-01'),
                 location: 'Rio de Janeiro, RJ',
-                status: 'PLANEJADO',
+                status: 'planejado',
                 prize: 50000,
                 user_id: users[0].user_id
             }
