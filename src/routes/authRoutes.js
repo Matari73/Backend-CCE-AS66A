@@ -140,55 +140,6 @@ const router = express.Router();
 
 /**
  * @swagger
- * /auth/profile:
- *   get:
- *     summary: Obter perfil do usuário autenticado
- *     tags: [Auth]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Perfil do usuário retornado com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: string
- *                   example: "507f1f77bcf86cd799439011"
- *                 name:
- *                   type: string
- *                   example: "João Silva"
- *                 email:
- *                   type: string
- *                   example: "joao@example.com"
- *       401:
- *         description: Token não fornecido ou inválido
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Autenticação necessária"
- */
-
-router.post('/register', validateSchema(userSchema), register);
-router.post('/login', login);
-
-// Rota para obter perfil do usuário autenticado
-router.get('/profile', authMiddleware, (req, res) => {
-  res.json({
-    id: req.user.user_id,
-    message: 'Perfil obtido com sucesso',
-    user: req.user
-  });
-});
-
-/**
- * @swagger
  * /auth/logout:
  *   post:
  *     summary: Realiza logout do usuário
@@ -213,6 +164,9 @@ router.get('/profile', authMiddleware, (req, res) => {
  *       500:
  *         description: Erro interno do servidor
  */
+
 router.post('/logout', authMiddleware, logout);
+router.post('/register', validateSchema(userSchema), register);
+router.post('/login', login);
 
 export default router;

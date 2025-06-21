@@ -17,8 +17,6 @@ import { checkOwnership } from '../middlewares/ownershipMiddleware.js';
 
 const router = express.Router();
 
-
-
 /**
  * @swagger
  * /championship-statistics/overview/{id}:
@@ -49,7 +47,6 @@ const router = express.Router();
  *       500:
  *         description: Erro interno do servidor
  */
-router.get('/overview/:id', getChampionshipOverview);
 
 /**
  * @swagger
@@ -79,7 +76,6 @@ router.get('/overview/:id', getChampionshipOverview);
  *       500:
  *         description: Erro interno do servidor
  */
-router.get('/overview/:id/teams', getTeamStatistics);
 
 /**
  * @swagger
@@ -109,7 +105,6 @@ router.get('/overview/:id/teams', getTeamStatistics);
  *       500:
  *         description: Erro interno do servidor
  */
-router.get('/overview/:id/players', getAllPlayerStatsInChampionship);
 
 /**
  * @swagger
@@ -137,16 +132,6 @@ router.get('/overview/:id/players', getAllPlayerStatsInChampionship);
  *       500:
  *         description: Erro interno do servidor
  */
-router.get('/player/:playerId', getStatsByPlayerId);
-
-router.post('/', authMiddleware, validateSchema(championshipStatisticsSchema), createChampionshipStats);
-router.get('/', getAllChampionshipStats);
-router.get('/:statisticId', getChampionshipStatsById);
-
-
-router.put('/:statisticId', authMiddleware, checkOwnership('championshipstatistics'), validateSchema(championshipStatisticsSchema), updateChampionshipStats);
-router.delete('/:statisticId', authMiddleware, checkOwnership('championshipstatistics'), deleteChampionshipStats);
-
 
 /**
  * @swagger
@@ -348,5 +333,15 @@ router.delete('/:statisticId', authMiddleware, checkOwnership('championshipstati
  *       500:
  *         description: Erro interno do servidor
  */
+
+router.get('/player/:playerId', getStatsByPlayerId);
+router.post('/', authMiddleware, validateSchema(championshipStatisticsSchema), createChampionshipStats);
+router.get('/', getAllChampionshipStats);
+router.get('/:statisticId', getChampionshipStatsById);
+router.get('/overview/:id', getChampionshipOverview);
+router.get('/overview/:id/teams', getTeamStatistics);
+router.get('/overview/:id/players', getAllPlayerStatsInChampionship);
+router.put('/:statisticId', authMiddleware, checkOwnership('championshipstatistics'), validateSchema(championshipStatisticsSchema), updateChampionshipStats);
+router.delete('/:statisticId', authMiddleware, checkOwnership('championshipstatistics'), deleteChampionshipStats);
 
 export default router;
