@@ -40,16 +40,12 @@ export const checkOwnership = (entityType) => async (req, res, next) => {
       case 'participant':
         entity = await Participant.findByPk(entityId, {
           include: [{
-            model: Team,
-            attributes: ['user_id'],
-            required: false
-          }, {
             model: User,
             attributes: ['user_id'],
-            required: false
+            required: true
           }]
         });
-        ownerId = entity?.Team?.user_id || entity?.User?.user_id;
+        ownerId = entity?.User?.user_id;
         break;
 
       case 'match':
