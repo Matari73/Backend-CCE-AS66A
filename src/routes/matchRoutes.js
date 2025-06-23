@@ -1,4 +1,7 @@
 import express from 'express';
+import Match from '../models/match.js';
+import { createMatch } from '../controllers/matchController.js';
+import { authMiddleware } from '../middlewares/authMiddleware.js';
 import {
   getAllMatches,
   getMatchById,
@@ -10,6 +13,46 @@ import { authMiddleware } from '../middlewares/authMiddleware.js';
 authMiddleware
 
 const router = express.Router();
+
+export const createMatch = async (req, res) => {
+  try {
+    const {
+      championship_id,
+      teamA_id,
+      teamB_id,
+      date,
+      stage,
+      bracket,
+      winner_team_id,
+      score,
+      map
+    } = req.body;
+
+    const match = await Match.create({
+      championship_id,
+      teamA_id,
+      teamB_id,
+      date,
+      stage,
+      bracket,
+      winner_team_id,
+      score,
+      map
+    });
+
+    res.status(201).json({
+      success: true,
+      data: match,
+      message: 'Partida criada com sucesso'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Erro ao criar a partida',
+      error: error.message
+    });
+  }
+};
 
 /**
  * @swagger
@@ -272,7 +315,7 @@ const router = express.Router();
  *                   type: string
  *                   example: "Failed to fetch match"
  */
-
+router.post('/', authMiddleware, createMatch); 
 router.get('/', getAllMatches);
 router.get('/:id', getMatchById);
 router.put('/:id', authMiddleware, validateSchema(matchUpdateSchema), updateMatch);

@@ -41,12 +41,22 @@ export const createParticipant = async (req, res) => {
 
 export const getAllParticipants = async (req, res) => {
   try {
-    const participants = await Participant.findAll();
+    const userId = req.user?.user_id; // vindo do token JWT via middleware
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Teste de erro.....' });
+    }
+
+    const participants = await Participant.findAll({
+      where: { user_id: userId }
+    });
+
     res.json(participants);
   } catch (err) {
     res.status(500).json({ error: 'Erro ao buscar participantes: ' + err.message });
   }
 };
+
 
 export const getParticipantById = async (req, res) => {
   try {
