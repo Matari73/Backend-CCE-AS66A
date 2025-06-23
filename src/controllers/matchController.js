@@ -3,41 +3,6 @@ import Team from '../models/team.js';
 import Championship from '../models/championship.js';
 import { handleSingleEliminationNextPhase, handleDoubleEliminationNextPhase } from '../services/championshipService.js';
 
-
-export const createMatch = async (req, res) => {
-  try {
-    const {
-      championship_id,
-      teamA_id,
-      teamB_id,
-      date,
-      stage,
-      winner_team_id,
-      score,
-      map
-    } = req.body;
-
-    const newMatch = await Match.create({
-      championship_id,
-      teamA_id,
-      teamB_id,
-      date,
-      stage,
-      winner_team_id,
-      score,
-      map
-    });
-
-    res.status(201).json({
-      message: 'Partida criada com sucesso.',
-      match: newMatch
-    });
-  } catch (error) {
-    console.error('Erro ao criar partida:', error);
-    res.status(500).json({ error: 'Erro ao criar a partida.' });
-  }
-};
-
 export const getAllMatches = async (req, res) => {
     try {
         const { championship_id, stage, status } = req.query;
