@@ -60,9 +60,9 @@ const Match = sequelize.define('Match', {
     allowNull: false
   },
   status: {
-    type: DataTypes.STRING,
+    type: DataTypes.ENUM('Planejada', 'Agendada', 'Finalizada'),
     allowNull: false,
-    defaultValue: 'Pre-Agendada'
+    defaultValue: 'Planejada'
   },
   next_match_id: {
     type: DataTypes.INTEGER,
@@ -84,7 +84,7 @@ Match.beforeSave((match) => {
 
   // Atualiza status
   if (hasDate && hasScore) {
-    match.status = 'Encerrada';
+    match.status = 'Finalizada';
 
     const teamAScore = match.score?.teamA ?? 0;
     const teamBScore = match.score?.teamB ?? 0;
@@ -96,7 +96,7 @@ Match.beforeSave((match) => {
   } else if (hasDate && !hasScore) {
     match.status = 'Agendada';
   } else {
-    match.status = 'Pre-Agendada';
+    match.status = 'Planejada';
   }
 });
 

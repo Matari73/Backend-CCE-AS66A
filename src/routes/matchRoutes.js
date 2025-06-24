@@ -73,8 +73,9 @@ const router = express.Router();
  *           example: "Haven"
  *         status:
  *           type: string
+ *           enum: [Planejada, Agendada, Finalizada]
  *           description: Status da partida
- *           example: "Pre-Agendada"
+ *           example: "Planejada"
  *         next_match_id:
  *           type: integer
  *           nullable: true

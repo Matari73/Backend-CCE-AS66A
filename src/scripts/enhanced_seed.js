@@ -225,7 +225,7 @@ const enhancedSeed = async () => {
                 start_date: new Date('2024-03-01'),
                 end_date: new Date('2024-03-31'),
                 location: 'São Paulo, SP',
-                status: 'FINALIZADO',
+                status: 'Finalizado',
                 prize: '25.000 reais',
                 user_id: users[0].user_id
             },
@@ -236,7 +236,7 @@ const enhancedSeed = async () => {
                 start_date: new Date('2024-06-01'),
                 end_date: new Date('2024-08-31'),
                 location: 'Rio de Janeiro, RJ',
-                status: 'ATIVO',
+                status: 'Ativo',
                 prize: '75.000 reais',
                 user_id: users[1].user_id
             },
@@ -247,29 +247,29 @@ const enhancedSeed = async () => {
                 start_date: new Date('2024-09-01'),
                 end_date: new Date('2024-09-30'),
                 location: 'Belo Horizonte, MG',
-                status: 'PLANEJADO',
+                status: 'Planejado',
                 prize: '40.000 reais',
                 user_id: users[2].user_id
             },
             {
-                name: 'CCE Masters Tournament - EM ANÁLISE',
-                description: 'Torneio especial de masters para os melhores jogadores. Aguardando aprovação final.',
+                name: 'CCE Masters Tournament - Planejado',
+                description: 'Torneio especial de masters para os melhores jogadores.',
                 format: 'double',
                 start_date: new Date('2024-10-15'),
                 end_date: new Date('2024-11-15'),
                 location: 'Brasília, DF',
-                status: 'EM_ANÁLISE',
+                status: 'Planejado',
                 prize: '100.000 reais',
                 user_id: users[3].user_id
             },
             {
-                name: 'CCE Regional Championship - CANCELADO',
-                description: 'Campeonato regional que foi cancelado devido a circunstâncias imprevistas.',
+                name: 'CCE Regional Championship - Finalizado',
+                description: 'Campeonato regional que foi finalizado.',
                 format: 'simple',
                 start_date: new Date('2024-07-01'),
                 end_date: new Date('2024-07-31'),
                 location: 'Curitiba, PR',
-                status: 'CANCELADO',
+                status: 'Finalizado',
                 prize: '15.000 reais',
                 user_id: users[4].user_id
             }
@@ -365,7 +365,7 @@ const enhancedSeed = async () => {
                 stage: 'Quartas de final',
                 date: new Date(`2024-03-${15 + i}`),
                 map: maps[Math.floor(Math.random() * maps.length)],
-                status: 'Encerrada',
+                status: 'Finalizada',
                 winner_team_id: score.teamA > score.teamB ? teamA.team_id : teamB.team_id,
                 score: score
             }, { transaction });
@@ -388,7 +388,7 @@ const enhancedSeed = async () => {
                 stage: 'Semifinal',
                 date: new Date(`2024-03-${25 + i}`),
                 map: maps[Math.floor(Math.random() * maps.length)],
-                status: 'Encerrada',
+                status: 'Finalizada',
                 winner_team_id: score.teamA > score.teamB ? teamA.team_id : teamB.team_id,
                 score: score
             }, { transaction });
@@ -405,7 +405,7 @@ const enhancedSeed = async () => {
             stage: 'Final',
             date: new Date('2024-03-30'),
             map: maps[Math.floor(Math.random() * maps.length)],
-            status: 'Encerrada',
+            status: 'Finalizada',
             winner_team_id: semifinalsResults[0].team_id, // LOUD wins!
             score: { teamA: 13, teamB: 11 }
         }, { transaction });
@@ -435,7 +435,7 @@ const enhancedSeed = async () => {
                 bracket: 'upper',
                 date: new Date(`2024-06-${5 + i}`),
                 map: maps[Math.floor(Math.random() * maps.length)],
-                status: 'Encerrada',
+                status: 'Finalizada',
                 winner_team_id: winnerId,
                 score: score
             }, { transaction });
@@ -465,7 +465,7 @@ const enhancedSeed = async () => {
                     bracket: 'upper',
                     date: new Date(`2024-06-${15 + i}`),
                     map: maps[Math.floor(Math.random() * maps.length)],
-                    status: 'Encerrada',
+                    status: 'Finalizada',
                     winner_team_id: winnerId,
                     score: score
                 }, { transaction });
@@ -503,7 +503,7 @@ const enhancedSeed = async () => {
                     bracket: 'lower',
                     date: new Date('2024-06-20'),
                     map: maps[Math.floor(Math.random() * maps.length)],
-                    status: 'Encerrada',
+                    status: 'Finalizada',
                     winner_team_id: winnerId,
                     score: score
                 }, { transaction });
@@ -526,7 +526,7 @@ const enhancedSeed = async () => {
                     stage: 'Lower Round 1',
                     bracket: 'lower',
                     map: maps[Math.floor(Math.random() * maps.length)],
-                    status: 'Pre-Agendada'
+                    status: 'Planejada'
                 }, { transaction });
             }
         }
@@ -544,7 +544,7 @@ const enhancedSeed = async () => {
                 teamB_id: teamB.team_id,
                 stage: 'Quartas de final',
                 map: maps[Math.floor(Math.random() * maps.length)],
-                status: 'Pre-Agendada'
+                status: 'Planejada'
             }, { transaction });
         }
 
@@ -554,7 +554,7 @@ const enhancedSeed = async () => {
         console.log('Criando estatísticas dos participantes...');
         const completedMatches = await Match.findAll({
             where: {
-                status: 'Encerrada'
+                status: 'Finalizada'
             },
             transaction
         });
@@ -626,7 +626,7 @@ const enhancedSeed = async () => {
         console.log('Criando estatísticas dos campeonatos...');
         const championshipStatsData = [];
         
-        const completedChampionships = championships.filter(c => c.status === 'FINALIZADO');
+        const completedChampionships = championships.filter(c => c.status === 'Finalizado');
         
         for (const championship of completedChampionships) {
             const championshipMatches = completedMatches.filter(m => 
@@ -695,11 +695,9 @@ const enhancedSeed = async () => {
         
         console.log('\n🏅 ESTADOS DOS CAMPEONATOS:');
         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        console.log(`   ✅ FINALIZADO: ${championships.filter(c => c.status === 'FINALIZADO').length} (com estatísticas completas)`);
-        console.log(`   🔥 ATIVO: ${championships.filter(c => c.status === 'ATIVO').length} (com partidas em andamento)`);
-        console.log(`   📋 PLANEJADO: ${championships.filter(c => c.status === 'PLANEJADO').length} (prontos para começar)`);
-        console.log(`   🔍 EM_ANÁLISE: ${championships.filter(c => c.status === 'EM_ANÁLISE').length} (aguardando aprovação)`);
-        console.log(`   ❌ CANCELADO: ${championships.filter(c => c.status === 'CANCELADO').length} (cancelados)`);
+        console.log(`   ✅ FINALIZADO: ${championships.filter(c => c.status === 'Finalizado').length} (com estatísticas completas)`);
+        console.log(`   🔥 ATIVO: ${championships.filter(c => c.status === 'Ativo').length} (com partidas em andamento)`);
+        console.log(`   📋 PLANEJADO: ${championships.filter(c => c.status === 'Planejado').length} (prontos para começar)`);
         
         console.log('\n🎯 RECURSOS PARA FRONTEND:');
         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
