@@ -62,7 +62,7 @@ const Match = sequelize.define('Match', {
   status: {
     type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: 'planejado'
+    defaultValue: 'agendado'
   },
   next_match_id: {
     type: DataTypes.INTEGER,
@@ -79,24 +79,11 @@ const Match = sequelize.define('Match', {
 
 // Atualização automática de status e cálculo do vencedor
 Match.beforeSave((match) => {
-  const hasDate = !!match.date;
-  const hasScore = !!match.score;
+  const teamAScore = match.score?.teamA ?? 0;
+  const teamBScore = match.score?.teamB ?? 0;
 
-  // Atualiza status
-  if (hasDate && hasScore) {
-    match.status = 'Encerrada';
-
-    const teamAScore = match.score?.teamA ?? 0;
-    const teamBScore = match.score?.teamB ?? 0;
-
-    if (!match.winner_team_id) {
-      match.winner_team_id = teamAScore > teamBScore ? match.teamA_id : match.teamB_id;
-    }
-
-  } else if (hasDate && !hasScore) {
-    match.status = 'Agendada';
-  } else {
-    match.status = 'Pre-Agendada';
+  if (!match.winner_team_id) {
+    match.winner_team_id = teamAScore > teamBScore ? match.teamA_id : match.teamB_id;
   }
 });
 

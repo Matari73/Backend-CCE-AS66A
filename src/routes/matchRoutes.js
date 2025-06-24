@@ -74,7 +74,7 @@ const router = express.Router();
  *         status:
  *           type: string
  *           description: Status da partida
- *           example: "Pre-Agendada"
+ *           example: "Agendada"
  *         next_match_id:
  *           type: integer
  *           nullable: true
