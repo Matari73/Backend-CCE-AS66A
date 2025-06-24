@@ -1,7 +1,7 @@
 import express from 'express';
 import { sequelize, connectInDatabase } from './db/db.js';
 import routes from './routes/index.js';
-import seed from './scripts/seed.js';
+import enhancedSeed from './scripts/enhanced_seed.js';
 import './models/associations.js';
 import cors from 'cors';
 
@@ -26,9 +26,9 @@ const startApp = async () => {
     await sequelize.sync({ force: true });
     console.log('🔄 Database synchronized');
 
-    console.log('🌱 Running database seed...');
-    await seed();
-    console.log('✅ Database seed completed');
+    console.log('🌱 Running enhanced database seed...');
+    await enhancedSeed();
+    console.log('✅ Enhanced database seed completed');
 
   } catch (err) {
     console.error('❌ Erro ao iniciar a aplicação:', err);
