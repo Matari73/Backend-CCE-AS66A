@@ -274,26 +274,6 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "Get Championship Bracket",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/championships/1/bracket",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"championships",
-								"1",
-								"bracket"
-							]
-						}
-					},
-					"response": []
 				}
 			]
 		},
