@@ -6,18 +6,18 @@ dotenv.config();
 export const authMiddleware = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
-    
+
     if (!token) {
-      return res.status(401).json({ 
+      return res.status(401).json({
         error: 'Autenticação necessária',
         details: 'Token não fornecido'
       });
     }
 
     if (tokenBlacklist.includes(token)) {
-      return res.status(401).json({ 
-        error: 'Sessão inválida', 
-        details: 'Token inválido (logout realizado)' 
+      return res.status(401).json({
+        error: 'Sessão inválida',
+        details: 'Token inválido (logout realizado)'
       });
     }
 
@@ -29,7 +29,7 @@ export const authMiddleware = async (req, res, next) => {
     });
 
     if (!decoded?.user_id) {
-      return res.status(403).json({ 
+      return res.status(403).json({
         error: 'Token inválido',
         details: 'Payload do token malformado'
       });
@@ -39,7 +39,7 @@ export const authMiddleware = async (req, res, next) => {
     next();
   } catch (error) {
     console.error('Erro na autenticação:', error);
-    res.status(401).json({ 
+    res.status(401).json({
       error: 'Falha na autenticação',
       details: 'Token inválido ou expirado'
     });

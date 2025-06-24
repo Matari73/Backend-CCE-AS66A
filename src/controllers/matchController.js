@@ -101,7 +101,7 @@ export const getMatchById = async (req, res) => {
         const winnerTeam = match.winner_team_id ?
             await Team.findByPk(match.winner_team_id, { attributes: ['team_id', 'name'] }) : null;
 
-        res.json({
+        res.status(200).json({
             success: true,
             data: {
                 ...match.toJSON(),
@@ -118,8 +118,6 @@ export const getMatchById = async (req, res) => {
             error: 'Failed to fetch match'
         });
     }
-
-    res.status(200).json(match);
 };
 
 export const getChampionshipMatches = async (req, res) => {
@@ -173,6 +171,47 @@ export const getChampionshipMatches = async (req, res) => {
         res.status(500).json({
             success: false,
             error: 'Failed to fetch championship matches'
+        });
+    }
+};
+
+export const updateMatch = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updateData = req.body;
+
+        const match = await Match.findByPk(id);
+        if (!match) {
+            return res.status(404).json({
+                success: false,
+                error: 'Match not found'
+            });
+        }
+
+        await match.update(updateData);
+
+        // Fetch updated match with team information
+        const teamA = await Team.findByPk(match.teamA_id, { attributes: ['team_id', 'name'] });
+        const teamB = await Team.findByPk(match.teamB_id, { attributes: ['team_id', 'name'] });
+        const winnerTeam = match.winner_team_id ?
+            await Team.findByPk(match.winner_team_id, { attributes: ['team_id', 'name'] }) : null;
+
+        res.json({
+            success: true,
+            message: 'Match updated successfully',
+            data: {
+                ...match.toJSON(),
+                TeamA: teamA,
+                TeamB: teamB,
+                WinnerTeam: winnerTeam
+            }
+        });
+
+    } catch (error) {
+        console.error('Error updating match:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to update match'
         });
     }
 };
@@ -235,7 +274,4 @@ export const generateNextRound = async (req, res) => {
             error: 'Failed to generate next round'
         });
     }
-
-    await match.destroy();
-    res.status(200).json({ message: 'Partida removida com sucesso.' });
 };
