@@ -237,7 +237,7 @@ export const bulkUpdateMatches = async (req, res) => {
     const results = [];
 
     for (const matchData of matches) {
-      const { match_id, score, map, date } = matchData;
+      const { match_id, score, map, date, status } = matchData;
 
       const match = await Match.findOne({
         where: {
@@ -288,6 +288,10 @@ export const bulkUpdateMatches = async (req, res) => {
         updateData.date = parsedDate;
       }
 
+      if (status !== undefined) {
+        updateData.status = status;
+      }
+
       await match.update(updateData);
       results.push({
         match_id,
@@ -297,7 +301,8 @@ export const bulkUpdateMatches = async (req, res) => {
           winner_team_id: updateData.winner_team_id,
           score_details: `TeamA: ${score.teamA} x ${score.teamB} :TeamB`
         }),
-        ...(date && { new_date: updateData.date.toISOString() })
+        ...(date && { new_date: updateData.date.toISOString() }),
+        ...(status !== undefined && { status: updateData.status })
       });
     }
 

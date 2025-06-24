@@ -809,7 +809,7 @@ const router = express.Router();
  *                       example: 1
  *                     score:
  *                       type: object
- *                       description: Placar da partida
+ *                       description: Placar da partida (opcional)
  *                       properties:
  *                         teamA:
  *                           type: integer
@@ -819,13 +819,18 @@ const router = express.Router();
  *                           example: 1
  *                     map:
  *                       type: string
- *                       description: Mapa jogado
+ *                       description: Mapa jogado (opcional)
  *                       example: "Haven"
  *                     date:
  *                       type: string
  *                       format: date-time
- *                       description: Data e hora da partida
+ *                       description: Data e hora da partida (opcional)
  *                       example: "2024-01-20T14:00:00.000Z"
+ *                     status:
+ *                       type: string
+ *                       description: Status da partida (opcional)
+ *                       enum: [agendado, ativo, finalizado]
+ *                       example: "finalizado"
  *     responses:
  *       200:
  *         description: Partidas atualizadas com sucesso
@@ -867,6 +872,9 @@ const router = express.Router();
  *                         type: string
  *                         format: date-time
  *                         example: "2024-01-20T14:00:00.000Z"
+ *                       status:
+ *                         type: string
+ *                         example: "finalizado"
  *       400:
  *         description: Dados inválidos
  *         content:

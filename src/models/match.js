@@ -79,8 +79,8 @@ const Match = sequelize.define('Match', {
 
 // Atualização automática de status e cálculo do vencedor
 Match.beforeSave((match) => {
-  const hasDate = !!match.date;
-  const hasScore = !!match.score;
+  const teamAScore = match.score?.teamA ?? 0;
+  const teamBScore = match.score?.teamB ?? 0;
 
   // Atualiza status
   if (hasDate && hasScore) {
