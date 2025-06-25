@@ -19,7 +19,7 @@ const validateStatsCreation = async (participant_id, match_id) => {
   }
 
   const match = await Match.findByPk(match_id);
-  if (match?.status !== 'finalizado') {
+  if (match?.status !== 'Finalizado') {
     throw new Error('Estatísticas só podem ser criadas após a finalização da partida (status: "finalizado")');
   }
 
