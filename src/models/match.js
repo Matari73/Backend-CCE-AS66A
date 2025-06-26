@@ -92,12 +92,6 @@ Match.beforeSave((match) => {
     if (!match.winner_team_id) {
       match.winner_team_id = teamAScore > teamBScore ? match.teamA_id : match.teamB_id;
     }
-
-  } else if (hasDate && !hasScore) {
-    match.status = 'Agendada';
-  } else {
-    match.status = 'Planejada';
-  }
 });
 
 export default Match;

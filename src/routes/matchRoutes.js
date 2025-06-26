@@ -1,13 +1,8 @@
 import express from 'express';
 import {
   getAllMatches,
-  getMatchById,
-  updateMatch,
+  getMatchById
 } from '../controllers/matchController.js';
-import { validateSchema } from '../middlewares/validateSchema.js';
-import { matchUpdateSchema } from '../schemas/matchUpdate.schema.js';
-import { authMiddleware } from '../middlewares/authMiddleware.js';
-authMiddleware
 
 const router = express.Router();
 
@@ -78,9 +73,8 @@ const router = express.Router();
  *           example: "Haven"
  *         status:
  *           type: string
- *           enum: [Planejada, Agendada, Finalizada]
  *           description: Status da partida
- *           example: "Planejada"
+ *           example: "Agendada"
  *         next_match_id:
  *           type: integer
  *           nullable: true
@@ -275,7 +269,6 @@ const router = express.Router();
 
 router.get('/', getAllMatches);
 router.get('/:id', getMatchById);
-router.put('/:id', authMiddleware, validateSchema(matchUpdateSchema), updateMatch);
 
 export default router;
 

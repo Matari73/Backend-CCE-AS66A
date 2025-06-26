@@ -243,7 +243,7 @@ const router = express.Router();
  *         description: Erro interno do servidor
  */
 
-router.get('/', authMiddleware, getAllParticipants);
+router.get('/', getAllParticipants);
 router.get('/:participantId', getParticipantById);
 router.post('/', authMiddleware, validateSchema(participantSchema), createParticipant);
 router.put('/:participantId', authMiddleware, checkOwnership('participant'), validateSchema(participantSchema), updateParticipant);

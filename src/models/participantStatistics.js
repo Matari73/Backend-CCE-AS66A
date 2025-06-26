@@ -63,10 +63,6 @@ const ParticipantStatistics = sequelize.define('ParticipantStatistics', {
     type: DataTypes.BOOLEAN,
     allowNull: false,
   },
-  first_kill: {
-    type: DataTypes.BOOLEAN,
-    allowNull: false,
-  },
   kda: {
   type: DataTypes.FLOAT,
   allowNull: false,

@@ -10,5 +10,4 @@ export const participantStatisticsSchema = z.object({
   spike_plants: z.number().int().min(0, 'Spike plants deve ser um número inteiro >= 0'),
   spike_defuses: z.number().int().min(0, 'Spike defuses deve ser um número inteiro >= 0'),
   MVP: z.boolean(),
-  first_kill: z.boolean(),
 });
