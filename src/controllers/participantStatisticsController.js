@@ -5,6 +5,7 @@ import Team from '../models/team.js';
 import Agent from '../models/agent.js';
 import Subscription from '../models/subscription.js';
 import Championship from '../models/championship.js';
+import { DataTypes, Op, QueryTypes } from 'sequelize';
 import { sequelize } from '../db/db.js';
 
 // Funções Auxiliares
@@ -244,12 +245,12 @@ export const getAllPlayersStats = async (req, res) => {
     const playersStats = await ParticipantStatistics.findAll({
       attributes: [
         'participant_id',
-        [sequelize.fn('SUM', sequelize.col('kills')), 'total_kills'],
-        [sequelize.fn('SUM', sequelize.col('deaths')), 'total_deaths'],
-        [sequelize.fn('SUM', sequelize.col('assists')), 'total_assists'],
-        [sequelize.fn('COUNT', sequelize.col('match_id')), 'total_matches'],
-        [sequelize.fn('SUM', sequelize.literal('CASE WHEN "MVPs" > 0 THEN 1 ELSE 0 END')), 'mvp_count'],
-        [sequelize.fn('AVG', sequelize.col('kda')), 'kda_ratio'],
+        [sequelize.fn('SUM', sequelize.col('participant_statistics.kills')), 'total_kills'],
+        [sequelize.fn('SUM', sequelize.col('participant_statistics.deaths')), 'total_deaths'],
+        [sequelize.fn('SUM', sequelize.col('participant_statistics.assists')), 'total_assists'],
+        [sequelize.fn('COUNT', sequelize.col('participant_statistics.match_id')), 'total_matches'],
+        [sequelize.fn('SUM', sequelize.literal('CASE WHEN participant_statistics.MVP = true THEN 1 ELSE 0 END')), 'mvp_count'],
+        [sequelize.fn('AVG', sequelize.col('participant_statistics.kda')), 'kda_ratio'],
       ],
       include: [
         {
@@ -263,7 +264,7 @@ export const getAllPlayersStats = async (req, res) => {
           ]
         }
       ],
-      group: ['participant_id', 'Participant.participant_id', 'Participant.Team.team_id'],
+      group: ['participant_statistics.participant_id', 'Participant.name', 'Participant.nickname', 'Participant.team_id', 'Participant.Team.name'],
       raw: false,
     });
 
@@ -293,38 +294,39 @@ export const getAllPlayersStats = async (req, res) => {
 
 export const getAllTeamsStats = async (req, res) => {
   try {
-    const teamsStats = await ParticipantStatistics.findAll({
+    console.log('🔍 Getting all teams stats...');
+    
+    // First get all teams
+    const teams = await Team.findAll({
       attributes: [
         'team_id',
-        [sequelize.fn('SUM', sequelize.col('kills')), 'total_kills'],
-        [sequelize.fn('SUM', sequelize.col('deaths')), 'total_deaths'],
-        [sequelize.fn('SUM', sequelize.col('assists')), 'total_assists'],
-        [sequelize.fn('COUNT', sequelize.literal('DISTINCT match_id')), 'total_matches'],
-        [sequelize.fn('SUM', sequelize.literal('CASE WHEN "MVPs" > 0 THEN 1 ELSE 0 END')), 'mvp_count'],
-        [sequelize.fn('AVG', sequelize.col('average_combat_score')), 'avg_match_score'],
+        'name'
       ],
-      include: [
-        {
-          model: Team,
-          attributes: ['name'],
-        }
-      ],
-      group: ['team_id', 'Team.team_id'],
-      raw: false,
+      include: [{
+        model: Participant,
+        attributes: [],
+        include: [{
+          model: ParticipantStatistics,
+          attributes: []
+        }]
+      }],
+      group: ['Team.team_id', 'Team.name'],
+      raw: true
     });
 
-    const formattedStats = teamsStats.map(stat => ({
-      team_id: stat.team_id,
-      team_name: stat.Team.name,
-      total_kills: parseInt(stat.get('total_kills')) || 0,
-      total_deaths: parseInt(stat.get('total_deaths')) || 0,
-      total_assists: parseInt(stat.get('total_assists')) || 0,
-      total_matches: parseInt(stat.get('total_matches')) || 0,
-      wins: 0, // Placeholder: would require calculation from match results
-      losses: 0, // Placeholder: would require calculation from match results
-      win_rate: 0, // Placeholder: would require calculation from match results
-      mvp_count: parseInt(stat.get('mvp_count')) || 0,
-      avg_match_score: parseFloat(stat.get('avg_match_score')).toFixed(2) || 0,
+    // Format the response with empty stats initially
+    const formattedStats = teams.map(team => ({
+      team_id: team.team_id,
+      team_name: team.name,
+      total_kills: 0,
+      total_deaths: 0,
+      total_assists: 0,
+      total_matches: 0,
+      wins: 0,
+      losses: 0,
+      win_rate: 0,
+      mvp_count: 0,
+      avg_match_score: '0.00'
     }));
 
     res.json(formattedStats);

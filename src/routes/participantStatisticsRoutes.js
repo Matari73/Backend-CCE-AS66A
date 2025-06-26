@@ -585,20 +585,24 @@ const router = express.Router();
  */
 
 router.get('/', getAllParticipantStats);
-router.get('/:statisticId', getParticipantStatsById);
-router.post('/', authMiddleware, validateSchema(participantStatisticsSchema), createParticipantStats);
-router.put('/:statisticId', authMiddleware, checkOwnership('participantstatistics'), validateSchema(participantStatisticsSchema), updateParticipantStats);
-router.delete('/:statisticId', authMiddleware, checkOwnership('participantstatistics'), deleteParticipantStats);
+// * These bad boys are for the dashboard and analytics
+// * They provide aggregated stats for players and teams
+router.get('/all-players', getAllPlayersStats);
+router.get('/all-teams', getAllTeamsStats);
+// Specific routes must come before parameterized routes
 router.get('/player/:playerId', getStatsByPlayer);
 router.get('/match/:matchId', getStatsByMatch);
 router.get('/top-players/:championshipId', getTopPlayers);
 router.get('/team/:teamId/stats', getStatsByTeam);
-router.get('/all-players', getAllPlayersStats);
-router.get('/all-teams', getAllTeamsStats);
 router.get('/player/:playerId/agents', getPlayerAgentStats);
 router.get('/player/:playerId/maps', getPlayerMapStats);
 router.get('/team/:teamId/agents', getTeamAgentStats);
 router.get('/team/:teamId/maps', getTeamMapStats);
 router.get('/team/:teamId/championships', getTeamChampionshipHistory);
+// Parameterized route should come last to avoid conflicts
+router.get('/:statisticId', getParticipantStatsById);
+router.post('/', authMiddleware, validateSchema(participantStatisticsSchema), createParticipantStats);
+router.put('/:statisticId', authMiddleware, checkOwnership('participantstatistics'), validateSchema(participantStatisticsSchema), updateParticipantStats);
+router.delete('/:statisticId', authMiddleware, checkOwnership('participantstatistics'), deleteParticipantStats);
 
 export default router;
