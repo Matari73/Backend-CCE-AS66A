@@ -245,12 +245,12 @@ export const getAllPlayersStats = async (req, res) => {
     const playersStats = await ParticipantStatistics.findAll({
       attributes: [
         'participant_id',
-        [sequelize.fn('SUM', sequelize.col('participant_statistics.kills')), 'total_kills'],
-        [sequelize.fn('SUM', sequelize.col('participant_statistics.deaths')), 'total_deaths'],
-        [sequelize.fn('SUM', sequelize.col('participant_statistics.assists')), 'total_assists'],
-        [sequelize.fn('COUNT', sequelize.col('participant_statistics.match_id')), 'total_matches'],
-        [sequelize.fn('SUM', sequelize.literal('CASE WHEN participant_statistics.MVP = true THEN 1 ELSE 0 END')), 'mvp_count'],
-        [sequelize.fn('AVG', sequelize.col('participant_statistics.kda')), 'kda_ratio'],
+        [sequelize.fn('SUM', sequelize.col('kills')), 'total_kills'],
+        [sequelize.fn('SUM', sequelize.col('deaths')), 'total_deaths'],
+        [sequelize.fn('SUM', sequelize.col('assists')), 'total_assists'],
+        [sequelize.fn('COUNT', sequelize.col('match_id')), 'total_matches'],
+        [sequelize.fn('SUM', sequelize.literal('CASE WHEN "ParticipantStatistics"."MVP" = true THEN 1 ELSE 0 END')), 'mvp_count'],
+        [sequelize.fn('AVG', sequelize.col('kda')), 'kda_ratio'],
       ],
       include: [
         {
@@ -264,7 +264,15 @@ export const getAllPlayersStats = async (req, res) => {
           ]
         }
       ],
-      group: ['participant_statistics.participant_id', 'Participant.name', 'Participant.nickname', 'Participant.team_id', 'Participant.Team.name'],
+      group: [
+        'ParticipantStatistics.participant_id', 
+        'Participant.participant_id',
+        'Participant.name', 
+        'Participant.nickname', 
+        'Participant.team_id', 
+        'Participant.Team.team_id',
+        'Participant.Team.name'
+      ],
       raw: false,
     });
 
