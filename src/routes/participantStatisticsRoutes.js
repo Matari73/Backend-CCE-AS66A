@@ -9,6 +9,13 @@ import {
     getStatsByMatch,
     getTopPlayers,
     getStatsByTeam,
+    getAllPlayersStats,
+    getAllTeamsStats,
+    getPlayerAgentStats,
+    getPlayerMapStats,
+    getTeamAgentStats,
+    getTeamMapStats,
+    getTeamChampionshipHistory
 } from '../controllers/participantStatisticsController.js';
 import { authMiddleware } from '../middlewares/authMiddleware.js';
 import { validateSchema } from '../middlewares/validateSchema.js';
@@ -386,14 +393,216 @@ const router = express.Router();
  *         description: Erro interno do servidor
  */
 
+/**
+ * @swagger
+ * /participant-statistics/all-players:
+ *   get:
+ *     summary: Obter estatísticas resumidas de todos os jogadores
+ *     tags: [ParticipantStatistics]
+ *     responses:
+ *       200:
+ *         description: Lista de estatísticas de todos os jogadores
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   participant_id:
+ *                     type: integer
+ *                     example: 1
+ *                   name:
+ *                     type: string
+ *                     example: "João Silva"
+ *                   nickname:
+ *                     type: string
+ *                     example: "joaoplayer"
+ *                   team_id:
+ *                     type: integer
+ *                     example: 2
+ *                   team_name:
+ *                     type: string
+ *                     example: "Team Alpha"
+ *                   total_kills:
+ *                     type: integer
+ *                     example: 120
+ *                   total_deaths:
+ *                     type: integer
+ *                     example: 80
+ *                   total_assists:
+ *                     type: integer
+ *                     example: 95
+ *                   total_matches:
+ *                     type: integer
+ *                     example: 15
+ *                   mvp_count:
+ *                     type: integer
+ *                     example: 3
+ *                   kda_ratio:
+ *                     type: number
+ *                     format: float
+ *                     example: 2.7
+ *       500:
+ *         description: Erro interno do servidor
+ *
+ * /participant-statistics/all-teams:
+ *   get:
+ *     summary: Obter estatísticas resumidas de todas as equipes
+ *     tags: [ParticipantStatistics]
+ *     responses:
+ *       200:
+ *         description: Lista de estatísticas de todas as equipes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   team_id:
+ *                     type: integer
+ *                     example: 1
+ *                   team_name:
+ *                     type: string
+ *                     example: "Team Alpha"
+ *                   total_kills:
+ *                     type: integer
+ *                     example: 450
+ *                   total_deaths:
+ *                     type: integer
+ *                     example: 380
+ *                   total_assists:
+ *                     type: integer
+ *                     example: 320
+ *                   total_matches:
+ *                     type: integer
+ *                     example: 25
+ *                   wins:
+ *                     type: integer
+ *                     example: 15
+ *                   losses:
+ *                     type: integer
+ *                     example: 10
+ *                   win_rate:
+ *                     type: number
+ *                     format: float
+ *                     example: 60.0
+ *                   mvp_count:
+ *                     type: integer
+ *                     example: 12
+ *                   avg_match_score:
+ *                     type: number
+ *                     format: float
+ *                     example: 254.8
+ *       500:
+ *         description: Erro interno do servidor
+ *
+ * /participant-statistics/player/{playerId}/agents:
+ *   get:
+ *     summary: Obter estatísticas de agentes usados por um jogador específico
+ *     tags: [ParticipantStatistics]
+ *     parameters:
+ *       - name: playerId
+ *         in: path
+ *         required: true
+ *         description: ID do jogador
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Estatísticas de agentes do jogador
+ *       500:
+ *         description: Erro interno do servidor
+ *
+ * /participant-statistics/player/{playerId}/maps:
+ *   get:
+ *     summary: Obter estatísticas de desempenho por mapa para um jogador específico
+ *     tags: [ParticipantStatistics]
+ *     parameters:
+ *       - name: playerId
+ *         in: path
+ *         required: true
+ *         description: ID do jogador
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Estatísticas de mapas do jogador
+ *       500:
+ *         description: Erro interno do servidor
+ *
+ * /participant-statistics/team/{teamId}/agents:
+ *   get:
+ *     summary: Obter estatísticas de agentes usados por uma equipe específica
+ *     tags: [ParticipantStatistics]
+ *     parameters:
+ *       - name: teamId
+ *         in: path
+ *         required: true
+ *         description: ID da equipe
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Estatísticas de agentes da equipe
+ *       500:
+ *         description: Erro interno do servidor
+ *
+ * /participant-statistics/team/{teamId}/maps:
+ *   get:
+ *     summary: Obter estatísticas de desempenho por mapa para uma equipe específica
+ *     tags: [ParticipantStatistics]
+ *     parameters:
+ *       - name: teamId
+ *         in: path
+ *         required: true
+ *         description: ID da equipe
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Estatísticas de mapas da equipe
+ *       500:
+ *         description: Erro interno do servidor
+ *
+ * /participant-statistics/team/{teamId}/championships:
+ *   get:
+ *     summary: Obter histórico de participação em campeonatos de uma equipe
+ *     tags: [ParticipantStatistics]
+ *     parameters:
+ *       - name: teamId
+ *         in: path
+ *         required: true
+ *         description: ID da equipe
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Histórico de participação em campeonatos
+ *       500:
+ *         description: Erro interno do servidor
+ */
+
 router.get('/', getAllParticipantStats);
-router.get('/:statisticId', getParticipantStatsById);
-router.post('/', authMiddleware, validateSchema(participantStatisticsSchema), createParticipantStats);
-router.put('/:statisticId', authMiddleware, checkOwnership('participantstatistics'), validateSchema(participantStatisticsSchema), updateParticipantStats);
-router.delete('/:statisticId', authMiddleware, checkOwnership('participantstatistics'), deleteParticipantStats);
+// * These bad boys are for the dashboard and analytics
+// * They provide aggregated stats for players and teams
+router.get('/all-players', getAllPlayersStats);
+router.get('/all-teams', getAllTeamsStats);
+// Specific routes must come before parameterized routes
 router.get('/player/:playerId', getStatsByPlayer);
 router.get('/match/:matchId', getStatsByMatch);
 router.get('/top-players/:championshipId', getTopPlayers);
 router.get('/team/:teamId/stats', getStatsByTeam);
+router.get('/player/:playerId/agents', getPlayerAgentStats);
+router.get('/player/:playerId/maps', getPlayerMapStats);
+router.get('/team/:teamId/agents', getTeamAgentStats);
+router.get('/team/:teamId/maps', getTeamMapStats);
+router.get('/team/:teamId/championships', getTeamChampionshipHistory);
+// Parameterized route should come last to avoid conflicts
+router.get('/:statisticId', getParticipantStatsById);
+router.post('/', authMiddleware, validateSchema(participantStatisticsSchema), createParticipantStats);
+router.put('/:statisticId', authMiddleware, checkOwnership('participantstatistics'), validateSchema(participantStatisticsSchema), updateParticipantStats);
+router.delete('/:statisticId', authMiddleware, checkOwnership('participantstatistics'), deleteParticipantStats);
 
 export default router;

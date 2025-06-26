@@ -32,7 +32,7 @@ const Championship = sequelize.define('Championship', {
     allowNull: false,
   },
   status: {
-    type: DataTypes.STRING,
+    type: DataTypes.ENUM('Planejado', 'Ativo', 'Finalizado'),
     allowNull: false,
   },
   prize: {
