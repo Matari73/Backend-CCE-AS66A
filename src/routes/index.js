@@ -29,6 +29,7 @@ const configureRoutes = (app) => {
     app.use('/subscriptions', subscriptionRoutes);
     app.use('/participants', participantRoutes);
     app.use('/participant-stats', participantStatisticsRoutes);
+    app.use('/statistics/participants', participantStatisticsRoutes); // Alias for frontend compatibility
     app.use('/championship-stats', championshipStatisticsRoutes);
 };
 

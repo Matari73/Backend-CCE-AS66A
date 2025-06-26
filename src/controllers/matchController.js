@@ -82,8 +82,6 @@ export const getMatchById = async (req, res) => {
             error: 'Failed to fetch match'
         });
     }
-
-    res.status(200).json(match);
 };
 
 export const getChampionshipMatches = async (req, res) => {

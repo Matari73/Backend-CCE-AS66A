@@ -379,12 +379,12 @@ export const getPlayerAgentStats = async (req, res) => {
     const agentStats = await ParticipantStatistics.findAll({
       where: { participant_id: playerId },
       attributes: [
-        'agent_id',
-        [sequelize.fn('COUNT', sequelize.col('match_id')), 'matches_played'],
-        [sequelize.fn('AVG', sequelize.col('kills')), 'avg_kills'],
-        [sequelize.fn('AVG', sequelize.col('deaths')), 'avg_deaths'],
-        [sequelize.fn('AVG', sequelize.col('assists')), 'avg_assists'],
-        [sequelize.fn('AVG', sequelize.col('kda')), 'kda_ratio'],
+        [sequelize.col('ParticipantStatistics.agent_id'), 'agent_id'],
+        [sequelize.fn('COUNT', sequelize.col('ParticipantStatistics.match_id')), 'matches_played'],
+        [sequelize.fn('AVG', sequelize.col('ParticipantStatistics.kills')), 'avg_kills'],
+        [sequelize.fn('AVG', sequelize.col('ParticipantStatistics.deaths')), 'avg_deaths'],
+        [sequelize.fn('AVG', sequelize.col('ParticipantStatistics.assists')), 'avg_assists'],
+        [sequelize.fn('AVG', sequelize.col('ParticipantStatistics.kda')), 'kda_ratio'],
       ],
       include: [
         {
@@ -392,12 +392,12 @@ export const getPlayerAgentStats = async (req, res) => {
           attributes: ['name'],
         }
       ],
-      group: ['agent_id', 'Agent.agent_id'],
+      group: ['ParticipantStatistics.agent_id', 'Agent.agent_id', 'Agent.name'],
       raw: false,
     });
 
     const formattedStats = agentStats.map(stat => ({
-      agent_id: stat.agent_id,
+      agent_id: stat.get('agent_id'),
       agent_name: stat.Agent?.name || 'Unknown Agent',
       matches_played: parseInt(stat.get('matches_played')) || 0,
       win_rate: 0, // Placeholder: would require calculation from match results
@@ -424,9 +424,9 @@ export const getPlayerMapStats = async (req, res) => {
       where: { participant_id: playerId },
       attributes: [
         [sequelize.fn('COUNT', sequelize.col('ParticipantStatistics.match_id')), 'matches_played'],
-        [sequelize.fn('SUM', sequelize.col('kills')), 'total_kills'],
-        [sequelize.fn('SUM', sequelize.col('deaths')), 'total_deaths'],
-        [sequelize.fn('AVG', sequelize.col('average_combat_score')), 'avg_score'],
+        [sequelize.fn('SUM', sequelize.col('ParticipantStatistics.kills')), 'total_kills'],
+        [sequelize.fn('SUM', sequelize.col('ParticipantStatistics.deaths')), 'total_deaths'],
+        [sequelize.fn('AVG', sequelize.col('ParticipantStatistics.average_combat_score')), 'avg_score'],
       ],
       include: [
         {
@@ -434,7 +434,7 @@ export const getPlayerMapStats = async (req, res) => {
           attributes: ['map'],
         }
       ],
-      group: ['Match.map'],
+      group: ['Match.match_id', 'Match.map'],
       raw: false,
     });
 
@@ -465,12 +465,12 @@ export const getTeamAgentStats = async (req, res) => {
     const agentStats = await ParticipantStatistics.findAll({
       where: { team_id: teamId },
       attributes: [
-        'agent_id',
-        [sequelize.fn('COUNT', sequelize.col('match_id')), 'matches_played'],
-        [sequelize.fn('SUM', sequelize.col('kills')), 'total_kills'],
-        [sequelize.fn('SUM', sequelize.col('deaths')), 'total_deaths'],
-        [sequelize.fn('SUM', sequelize.col('assists')), 'total_assists'],
-        [sequelize.fn('AVG', sequelize.col('kda')), 'avg_kda'],
+        [sequelize.col('ParticipantStatistics.agent_id'), 'agent_id'],
+        [sequelize.fn('COUNT', sequelize.col('ParticipantStatistics.match_id')), 'matches_played'],
+        [sequelize.fn('SUM', sequelize.col('ParticipantStatistics.kills')), 'total_kills'],
+        [sequelize.fn('SUM', sequelize.col('ParticipantStatistics.deaths')), 'total_deaths'],
+        [sequelize.fn('SUM', sequelize.col('ParticipantStatistics.assists')), 'total_assists'],
+        [sequelize.fn('AVG', sequelize.col('ParticipantStatistics.kda')), 'avg_kda'],
       ],
       include: [
         {
@@ -478,12 +478,12 @@ export const getTeamAgentStats = async (req, res) => {
           attributes: ['name'],
         }
       ],
-      group: ['agent_id', 'Agent.agent_id'],
+      group: ['ParticipantStatistics.agent_id', 'Agent.agent_id', 'Agent.name'],
       raw: false,
     });
 
     const formattedStats = agentStats.map(stat => ({
-      agent_id: stat.agent_id,
+      agent_id: stat.get('agent_id'),
       agent_name: stat.Agent?.name || 'Unknown Agent',
       matches_played: parseInt(stat.get('matches_played')) || 0,
       total_kills: parseInt(stat.get('total_kills')) || 0,
@@ -510,10 +510,10 @@ export const getTeamMapStats = async (req, res) => {
       where: { team_id: teamId },
       attributes: [
         [sequelize.fn('COUNT', sequelize.col('ParticipantStatistics.match_id')), 'total_matches'],
-        [sequelize.fn('SUM', sequelize.col('kills')), 'total_kills'],
-        [sequelize.fn('SUM', sequelize.col('deaths')), 'total_deaths'],
-        [sequelize.fn('SUM', sequelize.col('assists')), 'total_assists'],
-        [sequelize.fn('AVG', sequelize.col('average_combat_score')), 'avg_combat_score'],
+        [sequelize.fn('SUM', sequelize.col('ParticipantStatistics.kills')), 'total_kills'],
+        [sequelize.fn('SUM', sequelize.col('ParticipantStatistics.deaths')), 'total_deaths'],
+        [sequelize.fn('SUM', sequelize.col('ParticipantStatistics.assists')), 'total_assists'],
+        [sequelize.fn('AVG', sequelize.col('ParticipantStatistics.average_combat_score')), 'avg_combat_score'],
       ],
       include: [
         {
@@ -521,7 +521,7 @@ export const getTeamMapStats = async (req, res) => {
           attributes: ['map'],
         }
       ],
-      group: ['Match.map'],
+      group: ['Match.match_id', 'Match.map'],
       raw: false,
     });
 
