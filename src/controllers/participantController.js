@@ -49,6 +49,23 @@ export const getAllParticipants = async (req, res) => {
   }
 };
 
+export const getParticipantsByUser = async (req, res) => {
+  try {
+    // Obtém o user_id do token através do middleware authMiddleware
+    const userId = req.user.user_id;
+    
+    const participants = await Participant.findAll({
+      where: { user_id: userId }
+    });
+
+    res.json(participants);
+  } catch (err) {
+    res.status(500).json({ 
+      error: 'Erro ao buscar participantes do usuário: ' + err.message 
+    });
+  }
+};
+
 
 export const getParticipantById = async (req, res) => {
   try {

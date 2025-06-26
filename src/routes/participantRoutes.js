@@ -3,6 +3,7 @@ import {
   createParticipant,
   getAllParticipants,
   getParticipantById,
+  getParticipantsByUser,
   updateParticipant,
   deleteParticipant
 } from '../controllers/participantController.js';
@@ -148,6 +149,43 @@ const router = express.Router();
  *         description: Erro interno do servidor
  */
 
+// src/routes/participantRoutes.js
+
+// ... (outras importações)
+import {
+  createParticipant,
+  getAllParticipants,
+  getParticipantById,
+  updateParticipant,
+  deleteParticipant,
+  getParticipantsByUser // Adicione esta importação
+} from '../controllers/participantController.js';
+
+// ... (rotas existentes)
+
+/**
+ * @swagger
+ * /participants/user/my-participants:
+ *   get:
+ *     summary: Lista todos os participantes do usuário autenticado
+ *     tags: [Participants]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de participantes do usuário retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Participant'
+ *       401:
+ *         description: Token não fornecido ou inválido
+ *       500:
+ *         description: Erro interno do servidor
+ */
+
 /**
  * @swagger
  * /participants/{participantId}:
@@ -245,6 +283,7 @@ const router = express.Router();
 
 router.get('/', getAllParticipants);
 router.get('/:participantId', getParticipantById);
+router.get('/user/my-participants', authMiddleware, getParticipantsByUser);
 router.post('/', authMiddleware, validateSchema(participantSchema), createParticipant);
 router.put('/:participantId', authMiddleware, checkOwnership('participant'), validateSchema(participantSchema), updateParticipant);
 router.delete('/:participantId', authMiddleware, checkOwnership('participant'), deleteParticipant);

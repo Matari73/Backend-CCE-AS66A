@@ -61,8 +61,6 @@ const router = express.Router();
  *   get:
  *     summary: Lista todos os usuários
  *     tags: [Users]
- *     security:
- *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Lista de usuários retornada com sucesso
@@ -72,8 +70,6 @@ const router = express.Router();
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/User'
- *       401:
- *         description: Token não fornecido ou inválido
  *       500:
  *         description: Erro interno do servidor
  */
@@ -84,8 +80,6 @@ const router = express.Router();
  *   get:
  *     summary: Obter usuário por ID
  *     tags: [Users]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: userId
@@ -101,8 +95,6 @@ const router = express.Router();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
- *       401:
- *         description: Token não fornecido ou inválido
  *       404:
  *         description: Usuário não encontrado
  *       500:
@@ -177,8 +169,8 @@ const router = express.Router();
  *         description: Erro interno do servidor
  */
 
-router.get('/', authMiddleware, getAllUsers);
-router.get('/:userId', authMiddleware, getUserById);
+router.get('/', getAllUsers);
+router.get('/:userId', getUserById);
 router.put('/:userId', authMiddleware, updateUser);
 router.delete('/:userId', authMiddleware, deleteUser);
 
