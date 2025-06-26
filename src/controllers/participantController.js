@@ -41,15 +41,7 @@ export const createParticipant = async (req, res) => {
 
 export const getAllParticipants = async (req, res) => {
   try {
-    const userId = req.user?.user_id; // vindo do token JWT via middleware
-
-    if (!userId) {
-      return res.status(401).json({ error: 'Teste de erro.....' });
-    }
-
-    const participants = await Participant.findAll({
-      where: { user_id: userId }
-    });
+    const participants = await Participant.findAll();
 
     res.json(participants);
   } catch (err) {
