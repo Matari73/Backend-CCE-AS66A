@@ -242,106 +242,132 @@ export const getStatsByTeam = async (req, res) => {
 
 export const getAllPlayersStats = async (req, res) => {
   try {
-    const playersStats = await ParticipantStatistics.findAll({
-      attributes: [
-        'participant_id',
-        [sequelize.fn('SUM', sequelize.col('kills')), 'total_kills'],
-        [sequelize.fn('SUM', sequelize.col('deaths')), 'total_deaths'],
-        [sequelize.fn('SUM', sequelize.col('assists')), 'total_assists'],
-        [sequelize.fn('COUNT', sequelize.col('match_id')), 'total_matches'],
-        [sequelize.fn('SUM', sequelize.literal('CASE WHEN "ParticipantStatistics"."MVP" = true THEN 1 ELSE 0 END')), 'mvp_count'],
-        [sequelize.fn('AVG', sequelize.col('kda')), 'kda_ratio'],
-      ],
-      include: [
-        {
-          model: Participant,
-          attributes: ['name', 'nickname', 'team_id'],
-          include: [
-            {
-              model: Team,
-              attributes: ['name'],
-            }
-          ]
-        }
-      ],
-      group: [
-        'ParticipantStatistics.participant_id', 
-        'Participant.participant_id',
-        'Participant.name', 
-        'Participant.nickname', 
-        'Participant.team_id', 
-        'Participant.Team.team_id',
-        'Participant.Team.name'
-      ],
-      raw: false,
+    const query = `
+      SELECT
+        "p"."participant_id",
+        "p"."name",
+        "p"."nickname",
+        "t"."team_id",
+        "t"."name" AS "team_name",
+        COALESCE(SUM("ps"."kills"), 0) AS "total_kills",
+        COALESCE(SUM("ps"."deaths"), 0) AS "total_deaths",
+        COALESCE(SUM("ps"."assists"), 0) AS "total_assists",
+        COUNT(DISTINCT "ps"."match_id") AS "total_matches",
+        COALESCE(SUM(CASE WHEN "ps"."MVP" = true THEN 1 ELSE 0 END), 0) AS "mvp_count",
+        COALESCE(AVG("ps"."kda"), 0) AS "kda_ratio",
+        (
+          SELECT COUNT(DISTINCT "m"."match_id")
+          FROM "matches" AS "m"
+          JOIN "participant_statistics" AS "ps_win" ON "m"."match_id" = "ps_win"."match_id"
+          WHERE "ps_win"."participant_id" = "p"."participant_id"
+            AND "m"."winner_team_id" = "p"."team_id"
+            AND "m"."status" = 'Finalizada'
+        ) AS "wins"
+      FROM
+        "participants" AS "p"
+      LEFT JOIN
+        "teams" AS "t" ON "p"."team_id" = "t"."team_id"
+      LEFT JOIN
+        "participant_statistics" AS "ps" ON "p"."participant_id" = "ps"."participant_id"
+      WHERE "p"."is_coach" = false
+      GROUP BY
+        "p"."participant_id", "p"."name", "p"."nickname", "t"."team_id", "t"."name"
+      ORDER BY
+        "p"."name";
+    `;
+
+    const playersStats = await sequelize.query(query, {
+      type: QueryTypes.SELECT,
+      raw: true,
     });
 
-    const formattedStats = playersStats.map(stat => ({
-      participant_id: stat.participant_id,
-      name: stat.Participant.name,
-      nickname: stat.Participant.nickname,
-      team_id: stat.Participant.team_id,
-      team_name: stat.Participant.Team?.name || 'Sem equipe',
-      total_kills: parseInt(stat.get('total_kills')) || 0,
-      total_deaths: parseInt(stat.get('total_deaths')) || 0,
-      total_assists: parseInt(stat.get('total_assists')) || 0,
-      total_matches: parseInt(stat.get('total_matches')) || 0,
-      mvp_count: parseInt(stat.get('mvp_count')) || 0,
-      kda_ratio: parseFloat(stat.get('kda_ratio')).toFixed(2) || 0,
-      win_rate: 0, // Placeholder: would require join with match results
-    }));
+    const formattedStats = playersStats.map(player => {
+      const totalMatches = parseInt(player.total_matches);
+      const wins = parseInt(player.wins);
+      const win_rate = totalMatches > 0 ? ((wins / totalMatches) * 100).toFixed(2) : "0.00";
+
+      return {
+        ...player,
+        total_kills: parseInt(player.total_kills),
+        total_deaths: parseInt(player.total_deaths),
+        total_assists: parseInt(player.total_assists),
+        total_matches: totalMatches,
+        mvp_count: parseInt(player.mvp_count),
+        kda_ratio: parseFloat(player.kda_ratio).toFixed(2),
+        wins: wins,
+        win_rate: win_rate,
+      };
+    });
 
     res.json(formattedStats);
   } catch (err) {
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Failed to fetch all players stats',
-      details: err.message 
+      details: err.message
     });
   }
 };
 
 export const getAllTeamsStats = async (req, res) => {
   try {
-    console.log('🔍 Getting all teams stats...');
-    
-    // First get all teams
-    const teams = await Team.findAll({
-      attributes: [
-        'team_id',
-        'name'
-      ],
-      include: [{
-        model: Participant,
-        attributes: [],
-        include: [{
-          model: ParticipantStatistics,
-          attributes: []
-        }]
-      }],
-      group: ['Team.team_id', 'Team.name'],
-      raw: true
+    const query = `
+      SELECT
+        "t"."team_id",
+        "t"."name" AS "team_name",
+        COALESCE(SUM("ps"."kills"), 0) AS "total_kills",
+        COALESCE(SUM("ps"."deaths"), 0) AS "total_deaths",
+        COALESCE(SUM("ps"."assists"), 0) AS "total_assists",
+        COUNT(DISTINCT "ps"."match_id") AS "total_matches",
+        COALESCE(SUM(CASE WHEN "ps"."MVP" = true THEN 1 ELSE 0 END), 0) AS "mvp_count",
+        COALESCE(AVG("ps"."total_score"), 0) AS "avg_match_score",
+        (
+          SELECT COUNT(*)
+          FROM "matches" AS "m"
+          WHERE "m"."winner_team_id" = "t"."team_id" AND "m"."status" = 'Finalizada'
+        ) AS "wins",
+        (
+          SELECT COUNT(*)
+          FROM "matches" AS "m"
+          WHERE ("m"."teamA_id" = "t"."team_id" OR "m"."teamB_id" = "t"."team_id")
+            AND "m"."status" = 'Finalizada'
+            AND "m"."winner_team_id" IS NOT NULL
+            AND "m"."winner_team_id" != "t"."team_id"
+        ) AS "losses"
+      FROM
+        "teams" AS "t"
+      LEFT JOIN
+        "participants" AS "p" ON "t"."team_id" = "p"."team_id"
+      LEFT JOIN
+        "participant_statistics" AS "ps" ON "p"."participant_id" = "ps"."participant_id"
+      GROUP BY
+        "t"."team_id", "t"."name"
+      ORDER BY
+        "t"."name";
+    `;
+
+    const teamsStats = await sequelize.query(query, {
+      type: QueryTypes.SELECT,
+      raw: true,
     });
 
-    // Format the response with empty stats initially
-    const formattedStats = teams.map(team => ({
-      team_id: team.team_id,
-      team_name: team.name,
-      total_kills: 0,
-      total_deaths: 0,
-      total_assists: 0,
-      total_matches: 0,
-      wins: 0,
-      losses: 0,
-      win_rate: 0,
-      mvp_count: 0,
-      avg_match_score: '0.00'
+    const formattedStats = teamsStats.map(team => ({
+      ...team,
+      total_kills: parseInt(team.total_kills),
+      total_deaths: parseInt(team.total_deaths),
+      total_assists: parseInt(team.total_assists),
+      total_matches: parseInt(team.total_matches),
+      mvp_count: parseInt(team.mvp_count),
+      avg_match_score: parseFloat(team.avg_match_score).toFixed(2),
+      wins: parseInt(team.wins),
+      losses: parseInt(team.losses),
+      win_rate: (team.wins + team.losses > 0) ? ((team.wins / (team.wins + team.losses)) * 100).toFixed(2) : "0.00",
     }));
 
     res.json(formattedStats);
   } catch (err) {
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Failed to fetch all teams stats',
-      details: err.message 
+      details: err.message
     });
   }
 };

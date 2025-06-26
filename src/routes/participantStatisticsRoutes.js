@@ -584,25 +584,35 @@ const router = express.Router();
  *         description: Erro interno do servidor
  */
 
-router.get('/', getAllParticipantStats);
-// * These bad boys are for the dashboard and analytics
-// * They provide aggregated stats for players and teams
+// Routes - Specific routes MUST come before parameterized routes
+// Summary/Aggregate routes
 router.get('/all-players', getAllPlayersStats);
 router.get('/all-teams', getAllTeamsStats);
-// Specific routes must come before parameterized routes
-router.get('/player/:playerId', getStatsByPlayer);
-router.get('/match/:matchId', getStatsByMatch);
-router.get('/top-players/:championshipId', getTopPlayers);
-router.get('/team/:teamId/stats', getStatsByTeam);
+router.get('/players/all', getAllPlayersStats);
+router.get('/teams/all', getAllTeamsStats);
+
+// Specific player/team analysis routes
 router.get('/player/:playerId/agents', getPlayerAgentStats);
 router.get('/player/:playerId/maps', getPlayerMapStats);
 router.get('/team/:teamId/agents', getTeamAgentStats);
 router.get('/team/:teamId/maps', getTeamMapStats);
-router.get('/team/:teamId/championships', getTeamChampionshipHistory);
-// Parameterized route should come last to avoid conflicts
-router.get('/:statisticId', getParticipantStatsById);
+router.get('/team/:teamId/history', getTeamChampionshipHistory);
+
+// Championship specific routes
+router.get('/top-players/:championshipId', getTopPlayers);
+
+// Individual entity routes
+router.get('/player/:playerId', getStatsByPlayer);
+router.get('/match/:matchId', getStatsByMatch);
+router.get('/team/:teamId', getStatsByTeam);
+
+// CRUD operations
 router.post('/', authMiddleware, validateSchema(participantStatisticsSchema), createParticipantStats);
-router.put('/:statisticId', authMiddleware, checkOwnership('participantstatistics'), validateSchema(participantStatisticsSchema), updateParticipantStats);
-router.delete('/:statisticId', authMiddleware, checkOwnership('participantstatistics'), deleteParticipantStats);
+router.get('/', getAllParticipantStats);
+
+// Parameterized routes MUST come last to avoid conflicts
+router.get('/:id', getParticipantStatsById);
+router.put('/:id', authMiddleware, checkOwnership('ParticipantStatistics'), validateSchema(participantStatisticsSchema), updateParticipantStats);
+router.delete('/:id', authMiddleware, checkOwnership('ParticipantStatistics'), deleteParticipantStats);
 
 export default router;
