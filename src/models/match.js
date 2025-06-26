@@ -79,10 +79,9 @@ const Match = sequelize.define('Match', {
 
 // Atualização automática de status e cálculo do vencedor
 Match.beforeSave((match) => {
-  const teamAScore = match.score?.teamA ?? 0;
-  const teamBScore = match.score?.teamB ?? 0;
+  const hasDate = !!match.date;
+  const hasScore = !!match.score;
 
-<<<<<<< HEAD
   // Atualiza status
   if (hasDate && hasScore) {
     match.status = 'Finalizada';
@@ -98,10 +97,6 @@ Match.beforeSave((match) => {
     match.status = 'Agendada';
   } else {
     match.status = 'Planejada';
-=======
-  if (!match.winner_team_id) {
-    match.winner_team_id = teamAScore > teamBScore ? match.teamA_id : match.teamB_id;
->>>>>>> c9cb035 (Adding status update possibility)
   }
 });
 
