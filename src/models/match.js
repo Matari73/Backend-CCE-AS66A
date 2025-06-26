@@ -77,21 +77,13 @@ const Match = sequelize.define('Match', {
   timestamps: false,
 });
 
-// Atualização automática de status e cálculo do vencedor
 Match.beforeSave((match) => {
   const teamAScore = match.score?.teamA ?? 0;
   const teamBScore = match.score?.teamB ?? 0;
 
-  // Atualiza status
-  if (hasDate && hasScore) {
-    match.status = 'Finalizada';
-
-    const teamAScore = match.score?.teamA ?? 0;
-    const teamBScore = match.score?.teamB ?? 0;
-
-    if (!match.winner_team_id) {
-      match.winner_team_id = teamAScore > teamBScore ? match.teamA_id : match.teamB_id;
-    }
+  if (!match.winner_team_id) {
+    match.winner_team_id = teamAScore > teamBScore ? match.teamA_id : match.teamB_id;
+  }
 });
 
 export default Match;
