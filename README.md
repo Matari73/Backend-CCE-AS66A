@@ -62,7 +62,7 @@ JWT_SECRET=segretojwt123
 ### 3. Suba os containers
 
 ```bash
-docker-compose up -d
+docker compose up --build
 ```
 
 ### 4. Execute o seed
@@ -95,7 +95,7 @@ npm run dev
 Acesse em:
 
 ```
-http://localhost:3001/api-docs
+http://localhost:3001/docs
 ```
 
 Utilize o Swagger para explorar as rotas disponíveis, schemas e exemplos de requisição/resposta.
