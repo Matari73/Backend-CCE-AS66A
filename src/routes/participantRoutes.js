@@ -149,19 +149,7 @@ const router = express.Router();
  *         description: Erro interno do servidor
  */
 
-// src/routes/participantRoutes.js
 
-// ... (outras importações)
-import {
-  createParticipant,
-  getAllParticipants,
-  getParticipantById,
-  updateParticipant,
-  deleteParticipant,
-  getParticipantsByUser // Adicione esta importação
-} from '../controllers/participantController.js';
-
-// ... (rotas existentes)
 
 /**
  * @swagger
